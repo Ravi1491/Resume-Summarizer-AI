@@ -1,0 +1,59 @@
+{% extends "base.html" %} {% block head %}
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
+<style>
+  /* Optional: Additional custom styles */
+  .mt-4 {
+    margin-top: 2rem;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="pdfs">Select PDFs to upload:</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="pdfs"
+            name="pdfs"
+            accept="application/pdf"
+            multiple
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h2>Uploaded Files</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Filename</th>
+              <th scope="col">Extracted Text</th>
+              <th scope="col">AI Generated Text</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pdf in uploaded_pdfs %}
+            <tr>
+              <td>{{ pdf.filename }}</td>
+              <td>{{ pdf.text }}</td>
+              <td>{{ pdf.ai_text }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

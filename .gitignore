@@ -1,0 +1,5 @@
+/venv
+/Resumes
+/uploads
+database.db
+/flask_session
