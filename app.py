@@ -1,36 +1,33 @@
 from flask import Flask, render_template, url_for,request, redirect,flash
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy
-from pdfminer3.layout import LAParams, LTTextBox
+from pdfminer3.layout import LAParams
 from pdfminer3.pdfpage import PDFPage
 from pdfminer3.pdfinterp import PDFResourceManager
 from pdfminer3.pdfinterp import PDFPageInterpreter
 from pdfminer3.converter import TextConverter
 
-# from prompt import prompt_extract_text
 import os
 import io
 from groq import Groq
 from flask_session import Session
 import sqlite3
+from .config import config
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads/'
-app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
-app.secret_key = 'your_secret_key'
-app.config['SESSION_TYPE'] = 'filesystem'  # Example session type; adjust as per your setup
-app.config['SESSION_COOKIE_NAME'] = 'your_session_cookie_name'
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True  # Ensure secure cookies in production
-app.config['SESSION_COOKIE_MAX_SIZE'] = 4093  # Limit session cookie size
+
+app.config.from_object(config[os.getenv("CONFIG_MODE")])
+
+config_val = config[os.getenv('CONFIG_MODE')]
+app.secret_key = config_val.SECRET_KEY
+
 
 Session(app)
 
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-  os.makedirs(app.config['UPLOAD_FOLDER'])
+if not os.path.exists(config_val.UPLOAD_FOLDER):
+  os.makedirs(config_val.UPLOAD_FOLDER)
 
 client = Groq(
-  api_key='*********',
+  api_key=config_val.GROQ_API_KEY,
 )
 
 def init_db():
@@ -55,7 +52,7 @@ def index():
   return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
 
 def allowed_file(filename):
-  return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in config_val.ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -69,7 +66,7 @@ def upload_file():
   for file in files:
     if file and allowed_file(file.filename):
       filename = secure_filename(file.filename)
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      file.save(os.path.join(config_val.UPLOAD_FOLDER, filename))
       saved_files.append(filename)
       with sqlite3.connect('database.db') as conn:
           cursor = conn.cursor()
@@ -149,4 +146,5 @@ def generate_text(prompt, text):
 
 if __name__ == '__main__':
   init_db()
+  
   app.run(debug=True)

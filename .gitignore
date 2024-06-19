@@ -3,3 +3,4 @@
 /uploads
 database.db
 /flask_session
+.env
