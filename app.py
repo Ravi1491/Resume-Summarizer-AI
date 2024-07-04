@@ -49,6 +49,10 @@ def index():
   
   return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
 
+@app.route('/compare',)
+def compare():
+  return render_template('compare.html')
+
 def allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
