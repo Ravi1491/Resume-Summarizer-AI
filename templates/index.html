@@ -1,53 +1,93 @@
-{% extends "base.html" %} {% block head %}
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
+{% extends "base.html" %} {% block head %} {{ super() }}
 <style>
-  /* Optional: Additional custom styles */
-  .mt-4 {
-    margin-top: 2rem;
+  /* Custom styles for index.html */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+  }
+  .upload-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .upload-section h2 {
+    margin-bottom: 10px;
+  }
+  .uploaded-files {
+    margin-top: 20px;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .table th,
+  .table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  .table th {
+    background-color: #f0f0f0;
+  }
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
   }
 </style>
 {% endblock %} {% block body %}
 <div class="container">
-  <div class="row">
+  <div class="row mt-4">
     <div class="col-md-6">
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="pdfs">Select PDFs to upload:</label>
-          <input
-            type="file"
-            class="form-control-file"
-            id="pdfs"
-            name="pdfs"
-            accept="application/pdf"
-            multiple
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
+      <div class="upload-section">
+        <h2>Upload PDFs</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="pdfs">Select PDFs to upload:</label>
+            <input
+              type="file"
+              id="pdfs"
+              name="pdfs"
+              accept="application/pdf"
+              multiple
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <div class="row mt-4">
+  <div class="row">
     <div class="col-md-12">
-      <h2>Uploaded Files</h2>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-          <thead class="thead-dark">
+      <div class="uploaded-files">
+        <h2>Uploaded Files</h2>
+        <table class="table">
+          <thead>
             <tr>
-              <th scope="col">Filename</th>
-              <th scope="col">Extracted Text</th>
-              <th scope="col">AI Generated Text</th>
+              <th>Filename</th>
+              <th>Extracted Text</th>
+              <th>AI Generated Text</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {% for pdf in uploaded_pdfs %}
             <tr>
-              <td>{{ pdf.filename }}</td>
-              <td>{{ pdf.text }}</td>
-              <td>{{ pdf.ai_text }}</td>
+              <td>{{ pdf[1] }}</td>
+              <td>{{ pdf[2] }}</td>
+              <td>{{ pdf[3] }}</td>
+              <td>
+                <form action="/delete/{{pdf[0]}}" method="POST">
+                  <button type="submit" class="delete-button">Delete</button>
+                </form>
+              </td>
             </tr>
             {% endfor %}
           </tbody>

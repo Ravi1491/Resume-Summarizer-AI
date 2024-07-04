@@ -1,61 +1,14 @@
-{% extends "base.html" %} {% block head %}
-<h1>Upload PDF</h1>
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
+{% extends "index.html" %} {% block head %} {{ super() }}
+<!-- Additional head content for upload.html -->
 <style>
-  /* Optional: Additional custom styles */
-  .mt-4 {
-    margin-top: 2rem;
+  /* Additional styles specific to upload.html */
+  .upload-section {
+    background-color: #e9ecef;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .upload-section h2 {
+    margin-bottom: 10px;
   }
 </style>
-{% endblock %} {% block body %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <h2>Upload PDFs</h2>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="pdfs">Select PDFs to upload:</label>
-          <input
-            type="file"
-            class="form-control-file"
-            id="pdfs"
-            name="pdfs"
-            accept="application/pdf"
-            multiple
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <h2>Uploaded Files</h2>
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Filename</th>
-              <th scope="col">Extracted Text</th>
-              <th scope="col">AI Generated Text</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for pdf in uploaded_pdfs %}
-            <tr>
-              <td>{{ pdf[1] }}</td>
-              <td>{{ pdf[2] }}</td>
-              <td>{{ pdf[3] }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
+{% endblock %} {% block body %} {{ super() }} {% endblock %}
