@@ -1,0 +1,72 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .header h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333333;
+  }
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .content div {
+    flex: 1;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .content h3 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+
+  .content p {
+    text-align: justify;
+    color: #555555;
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <div class="header">
+    <h2>{{pdf[0]}}</h2>
+  </div>
+  <div class="content">
+    <div class="original">
+      <h3>Original</h3>
+      <p>{{ pdf[1] }}</p>
+    </div>
+    <div class="ai-summarized">
+      <h3>AI Summarized</h3>
+      <p>{{ pdf[2] }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -53,6 +53,18 @@ def index():
 def compare():
   return render_template('compare.html')
 
+@app.route('/view/<int:id>')
+def view_pdf(id):
+  with sqlite3.connect('database.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute('SELECT filename, text, ai_text FROM pdfs WHERE id = ?', (id,))
+    pdf = cursor.fetchone()
+    if pdf:
+      return render_template('view.html', pdf=pdf)
+    else:
+      flash('PDF not found')
+      return redirect(url_for('index'))
+
 def allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
