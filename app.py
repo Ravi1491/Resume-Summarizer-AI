@@ -11,23 +11,24 @@ import io
 from groq import Groq
 from flask_session import Session
 import sqlite3
-from .config import config
+from config import DevelopmentConfig, ProductionConfig
 
 app = Flask(__name__)
 
-app.config.from_object(config[os.getenv("CONFIG_MODE")])
+if os.getenv('CONFIG_MODE') == 'development':
+  app.config.from_object(DevelopmentConfig)
+else:
+  app.config.from_object(ProductionConfig)
 
-config_val = config[os.getenv('CONFIG_MODE')]
-app.secret_key = config_val.SECRET_KEY
-
+app.secret_key = app.config['SECRET_KEY']
 
 Session(app)
 
-if not os.path.exists(config_val.UPLOAD_FOLDER):
-  os.makedirs(config_val.UPLOAD_FOLDER)
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+  os.makedirs(app.config['UPLOAD_FOLDER'])
 
 client = Groq(
-  api_key=config_val.GROQ_API_KEY,
+  api_key=app.config['GROQ_API_KEY'],
 )
 
 def init_db():
@@ -46,13 +47,27 @@ def init_db():
 def index():
   uploaded_pdfs = get_all_pdfs()
   
-  for pdf in uploaded_pdfs:
-    filename = pdf[1]
-    # print(filename)
   return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
 
 def allowed_file(filename):
-  return '.' in filename and filename.rsplit('.', 1)[1].lower() in config_val.ALLOWED_EXTENSIONS
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_pdf(id):
+
+  with sqlite3.connect('database.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute('SELECT filename FROM pdfs WHERE id = ?', (id,))
+    pdf = cursor.fetchone()
+    if pdf:
+      filename = pdf[0]
+      cursor.execute('DELETE FROM pdfs WHERE id = ?', (id,))
+      conn.commit()
+      os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      flash(f'Successfully deleted: {filename}')
+    else:
+      flash('PDF not found')
+  return redirect(url_for('index'))
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -66,7 +81,7 @@ def upload_file():
   for file in files:
     if file and allowed_file(file.filename):
       filename = secure_filename(file.filename)
-      file.save(os.path.join(config_val.UPLOAD_FOLDER, filename))
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
       saved_files.append(filename)
       with sqlite3.connect('database.db') as conn:
           cursor = conn.cursor()
