@@ -32,7 +32,7 @@ To set up Resume-Summarizer-AI on your local machine, follow these steps:
 5. Run the Application: Once dependencies are installed, start the application by executing:
 
    ```bash
-   python app.py
+   python run.py
    ```
 
    or
