@@ -5,3 +5,4 @@ database.db
 /flask_session
 .env
 __pycache__/
+.vercel
