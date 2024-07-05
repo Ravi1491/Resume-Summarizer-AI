@@ -33,28 +33,28 @@
 {% endblock %} {% block body %}
 <div class="container">
   <h2>Job Descriptions and Resume Matches</h2>
-  {% for result in comparison_results %}
+  <p>{{ data.job_description }}</p>
+
   <div class="job-section">
-    <h3>Job {{ result.job_id }}</h3>
-    <p>{{ result.job_description }}</p>
     <h4>Resume Matches:</h4>
     <table class="match-table">
       <thead>
         <tr>
           <th>Filename</th>
           <th>Match Percentage</th>
+          <th>Explanation</th>
         </tr>
       </thead>
       <tbody>
-        {% for match in result.matches %}
+        {% for match in data.comparison_results %}
         <tr>
-          <td>{{ match.filename }}</td>
-          <td>{{ match.match_percentage }}%</td>
+          <td>{{ match.file_name }}</td>
+          <td>{{ match.percentage }}%</td>
+          <td>{{ match.explanation }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-  {% endfor %}
 </div>
 {% endblock %}

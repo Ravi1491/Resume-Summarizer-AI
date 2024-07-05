@@ -119,14 +119,14 @@
 
     <div class="compare-section text-center" style="width: 50%">
       <h3>Compare Resume with Job Description</h3>
-      <form action="{{ url_for('app.compare') }}" method="GET">
-        <input
-          type="text"
+      <form action="{{ url_for('app.compare') }}" method="POST">
+        <textarea
           class="form-control"
           placeholder="Enter Job Description"
           name="job_description"
+          rows="4"
           style="width: 50%"
-        />
+        ></textarea>
         <button type="submit" class="btn btn-primary">Compare</button>
       </form>
     </div>

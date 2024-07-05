@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, flash, url_for, Blueprint, current_app
 from werkzeug.utils import secure_filename
 from .models import get_all_pdfs, delete_pdf_entry, get_pdf_by_id
-from .utils import get_resume_pdf_text, generate_text, allowed_file
+from .utils import get_resume_pdf_text, generate_text, allowed_file,match_job_description
 import os
 import sqlite3
 import json
@@ -12,11 +12,26 @@ app = Blueprint('app', __name__)
 @app.route('/')
 def index():
     uploaded_pdfs = get_all_pdfs()
-    # return "Hello"
     return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
 
-@app.route('/compare')
+@app.route('/compare', methods=['POST', 'GET'])
 def compare():
+    if request.method == 'POST' and 'job_description' in request.form:
+        allPdfs = get_all_pdfs()
+        final_res = []
+        
+        for pdf in allPdfs:
+            res = match_job_description(file_name=pdf[1],ai_text=pdf[3], job_description=request.form['job_description'])
+            print("res ====> ",res)
+            santize_res = json.loads(res)
+            final_res.append(santize_res)
+        
+        data = {
+            'job_description': request.form['job_description'],
+            'comparison_results': final_res
+        }
+        return render_template('compare.html', data=data)
+        
     return render_template('compare.html')
 
 @app.route('/view/<int:id>')

@@ -37,6 +37,36 @@ def generate_text(prompt, text):
     )
     return chat_completion.choices[0].message.content
 
+def match_job_description(file_name, ai_text, job_description):
+    client = Groq(api_key=current_app.config['GROQ_API_KEY'])
+    
+    prompt = f"""
+            Your task is to determine how well a resume matches a given job description.
+
+            Calculate the percentage of the resume that matches the job description.
+            Return a JSON object with exactly three fields: "file_name", "percentage", and "explanation".
+            The JSON object must be properly formatted and enclosed in curly braces.
+            Do not return any extra text outside of the JSON object.
+            Input details:
+
+            Job description: {job_description}
+            File name: {file_name}
+            Resume text: {ai_text}
+            
+            In Return only return the JSON.
+        """
+    
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="llama3-70b-8192",
+    )
+    return chat_completion.choices[0].message.content
+
 def dict_to_html_table(data):
     html = '''
     <style>
