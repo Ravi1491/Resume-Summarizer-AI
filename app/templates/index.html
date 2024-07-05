@@ -1,0 +1,176 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<link
+  href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .header,
+  .upload-section,
+  .compare-section,
+  .uploaded-files {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .header h1 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .compare-section form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .compare-section button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .compare-section button:hover {
+    background-color: #0056b3;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .table th {
+    background-color: #f2f2f2;
+  }
+
+  .table td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .delete-button:hover {
+    background-color: #c82333;
+  }
+
+  .form-control {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 50%;
+  }
+
+  .upload-section h2 {
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container-fluid">
+  <div style="text-align: center">
+    <h1>Resume AI Summarizer</h1>
+  </div>
+
+  <div style="display: flex; flex-direction: row; width: 100%">
+    <div style="width: 50%">{% block upload_content %}{% endblock %}</div>
+
+    <div class="compare-section text-center" style="width: 50%">
+      <h3>Compare Resume with Job Description</h3>
+      <form action="{{ url_for('app.compare') }}" method="GET">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter Job Description"
+          name="job_description"
+          style="width: 50%"
+        />
+        <button type="submit" class="btn btn-primary">Compare</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="uploaded-files">
+    <h2>Uploaded Files</h2>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Extracted Text</th>
+            <th>AI Generated Text</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pdf in uploaded_pdfs %}
+          <tr>
+            <td>{{ pdf[1] }}</td>
+            <td>{{ pdf[2] }}</td>
+            <td>{{ pdf[3] }}</td>
+            <td
+              style="
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <form action="/delete/{{pdf[0]}}" method="POST">
+                <button type="submit" class="delete-button">Delete</button>
+              </form>
+              <form action="/view/{{pdf[0]}}" method="GET">
+                <button type="submit" class="button">View</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

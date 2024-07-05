@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+  }
+  .job-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .job-section h2 {
+    margin-bottom: 10px;
+  }
+  .match-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .match-table th,
+  .match-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  .match-table th {
+    background-color: #f0f0f0;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <h2>Job Descriptions and Resume Matches</h2>
+  {% for result in comparison_results %}
+  <div class="job-section">
+    <h3>Job {{ result.job_id }}</h3>
+    <p>{{ result.job_description }}</p>
+    <h4>Resume Matches:</h4>
+    <table class="match-table">
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Match Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in result.matches %}
+        <tr>
+          <td>{{ match.filename }}</td>
+          <td>{{ match.match_percentage }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
