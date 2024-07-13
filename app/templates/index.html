@@ -110,15 +110,33 @@
 </style>
 {% endblock %} {% block body %}
 <div class="container-fluid">
-  <div style="text-align: center">
+  <div
+    style="
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+    "
+  >
     <h1>Resume AI Summarizer</h1>
+    <div
+      style="display: flex; justify-content: end; align-items: end; gap: 50px"
+    >
+      <button>
+        <a href="/login">Login</a>
+      </button>
+      <button>
+        <a href="/signup">Signup</a>
+      </button>
+    </div>
   </div>
 
   <div style="display: flex; flex-direction: row; width: 100%">
     <div style="width: 50%">{% block upload_content %}{% endblock %}</div>
 
     <div class="compare-section text-center" style="width: 50%">
-      <h3>Compare Resume with Job Description</h3>
+      <h3>Match Resume with Job Description</h3>
       <form action="{{ url_for('app.compare') }}" method="POST">
         <textarea
           class="form-control"

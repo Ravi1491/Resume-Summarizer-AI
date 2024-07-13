@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+  }
+  .header,
+  .content {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .header {
+    text-align: center;
+    padding-bottom: 0;
+  }
+  .content h3 {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  .error {
+    color: red;
+    margin: 10px;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <h1>Signup PAGE</h1>
+  <form action="{{ url_for('auth.signup') }}" method="POST">
+    <div>
+      <label for="">name</label>
+      <input name="name" type="text" />
+    </div>
+    <div>
+      <label for="">email</label>
+      <input name="email" type="text" />
+    </div>
+    <div>
+      <label for="">password</label>
+      <input name="password" type="text" />
+    </div>
+    <button type="submit">Sumbit</button>
+  </form>
+  {% if error %}
+  <div class="error">{{ error }}</div>
+  {% endif %}
+  <button>
+    <a href="/login">Login</a>
+  </button>
+</div>
+{% endblock %}

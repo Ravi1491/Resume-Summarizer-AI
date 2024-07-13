@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from flask import current_app, flash
+from .migrations import migration
 
 def init_db():
     with sqlite3.connect('database.db') as conn:
@@ -12,8 +13,21 @@ def init_db():
                             ai_text TEXT NULL,
                             upload_id INTEGER
                         )''')
+        cursor.execute(migration.create_user_table)
         conn.commit()
 
+def get_user_email(email):
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+        return cursor.fetchone()
+
+def create_user(name,email,password):
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO users (name,email,password) VALUES (?,?,?)', (name,email,password,))
+        conn.commit()
+        
 def get_all_pdfs():
     with sqlite3.connect('database.db') as conn:
         cursor = conn.cursor()

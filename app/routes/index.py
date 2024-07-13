@@ -1,11 +1,11 @@
 from flask import render_template, request, redirect, flash, url_for, Blueprint, current_app
 from werkzeug.utils import secure_filename
-from .models import get_all_pdfs, delete_pdf_entry, get_pdf_by_id
-from .utils import get_resume_pdf_text, generate_text, allowed_file,match_job_description
+from ..models import get_all_pdfs, delete_pdf_entry, get_pdf_by_id
+from ..utils import get_resume_pdf_text, generate_text, allowed_file,match_job_description
 import os
 import sqlite3
 import json
-from .utils import dict_to_html_table
+from ..utils import dict_to_html_table
 
 app = Blueprint('app', __name__)
 
@@ -13,6 +13,10 @@ app = Blueprint('app', __name__)
 def index():
     uploaded_pdfs = get_all_pdfs()
     return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/compare', methods=['POST', 'GET'])
 def compare():
@@ -22,7 +26,6 @@ def compare():
         
         for pdf in allPdfs:
             res = match_job_description(file_name=pdf[1],ai_text=pdf[3], job_description=request.form['job_description'])
-            print("res ====> ",res)
             santize_res = json.loads(res)
             final_res.append(santize_res)
         

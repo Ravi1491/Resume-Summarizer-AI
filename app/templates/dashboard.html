@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+  }
+  .header,
+  .content {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .header {
+    text-align: center;
+    padding-bottom: 0;
+  }
+  .content h3 {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="container">
+  <h1>DASHBOARD PAGE</h1>
+  <h1>name: {{ name }}</h1>
+</div>
+{% endblock %}
