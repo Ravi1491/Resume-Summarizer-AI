@@ -45,7 +45,7 @@ jobs:
         run: |
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY\":\"${{ secrets.GROQ_API_KEY }}\"}}}\" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY\":\"${{ secrets.GROQ_API_KEY }}\"}}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
   check-deployment:
