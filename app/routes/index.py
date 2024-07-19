@@ -9,6 +9,10 @@ from ..utils import dict_to_html_table
 
 app = Blueprint('app', __name__)
 
+@app.route('/health')
+def health():
+    return 'OK'
+
 @app.route('/')
 def index():
     return render_template('index.html')
