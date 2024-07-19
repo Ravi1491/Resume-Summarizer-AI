@@ -18,10 +18,12 @@ def create_app():
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
-    from .routes import app as routes_blueprint
+    from .routes.index import app as routes_blueprint
+    from .routes.auth import auth as auth_blueprint
     app.register_blueprint(routes_blueprint)
+    app.register_blueprint(auth_blueprint)
 
     from .models import init_db
     init_db()
-
+    
     return app

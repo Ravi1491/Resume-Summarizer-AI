@@ -1,39 +1,90 @@
 {% extends "base.html" %} {% block head %} {{ super() }}
 <style>
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
   body {
-    font-family: Arial, sans-serif;
+    font-family: "Roboto", Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
   }
+
   .container {
-    width: 80%;
+    width: 90%;
+    max-width: 1200px;
     margin: auto;
-    overflow: hidden;
+    padding: 2rem 0;
   }
+
   .header,
   .content {
     background: #fff;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
   }
+
   .header {
     text-align: center;
-    padding-bottom: 0;
+    background-color: var(--primary-color);
+    color: #fff;
   }
+
+  .header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+  }
+
   .content h3 {
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .ai-summarized p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      width: 95%;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+    }
+
+    .content {
+      padding: 1.5rem;
+    }
   }
 </style>
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+  rel="stylesheet"
+/>
 {% endblock %} {% block body %}
 <div class="container">
-  <div class="header"></div>
+  <div class="header">
+    <h1>AI Resume Summary</h1>
+  </div>
   <div class="content">
     <div class="ai-summarized">
-      <h3>AI Summarized</h3>
+      <h3>AI Summarized Content</h3>
       <p>{{ pdf|safe }}</p>
     </div>
   </div>
