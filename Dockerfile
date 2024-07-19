@@ -14,6 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Set environment variables
+ARG GROQ_API_KEY
+ENV GROQ_API_KEY=$GROQ_API_KEY
 ENV FLASK_APP=run.py
 ENV CONFIG_MODE=production
 
