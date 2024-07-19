@@ -1,194 +1,160 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
-<link
-  href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
+{% extends "base.html" %} {% block head %}
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+  * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
-
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    line-height: 1.6;
+  }
   .container {
-    max-width: 1000px;
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+  }
+  .navbar {
     background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
   }
-
-  .header,
-  .upload-section,
-  .compare-section,
-  .uploaded-files {
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .header h1 {
-    text-align: center;
-    margin-bottom: 0;
-  }
-
-  .compare-section form {
+  .navbar-content {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
   }
-
-  .compare-section button {
-    background-color: #007bff;
-    color: white;
+  .navbar-brand {
+    font-weight: bold;
+    color: #1877f2;
+    text-decoration: none;
+    font-size: 1.5rem;
+  }
+  .nav-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  .btn-outline {
+    border: 2px solid #1877f2;
+    color: #1877f2;
+  }
+  .btn-outline:hover {
+    background-color: #1877f2;
+    color: #ffffff;
+  }
+  .btn-primary {
+    background-color: #1877f2;
+    color: #ffffff;
     border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 4px;
   }
-
-  .compare-section button:hover {
-    background-color: #0056b3;
+  .btn-primary:hover {
+    background-color: #166fe5;
   }
-
-  .table-container {
-    overflow-x: auto;
+  .hero {
+    background-color: #ffffff;
+    padding: 6rem 0;
+    margin-bottom: 2rem;
+    text-align: center;
   }
-
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #1877f2;
+    margin-bottom: 1rem;
   }
-
-  .table th,
-  .table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
+  .hero p {
+    font-size: 1.25rem;
+    color: #65676b;
+    margin-bottom: 2rem;
   }
-
-  .table th {
-    background-color: #f2f2f2;
+  .feature-section {
+    padding: 4rem 0;
   }
-
-  .table td {
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
   }
-
-  .delete-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
+  .feature-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 2rem;
+    flex: 1;
+    min-width: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
   }
-
-  .delete-button:hover {
-    background-color: #c82333;
+  .feature-card:hover {
+    transform: translateY(-5px);
   }
-
-  .form-control {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 50%;
+  .feature-icon {
+    font-size: 2.5rem;
+    color: #1877f2;
+    margin-bottom: 1rem;
   }
-
-  .upload-section h2 {
-    margin-bottom: 20px;
+  .feature-card h3 {
+    color: #1877f2;
+    margin-bottom: 0.5rem;
   }
 </style>
 {% endblock %} {% block body %}
-<div class="container-fluid">
-  <div
-    style="
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 50px;
-    "
-  >
-    <h1>Resume AI Summarizer</h1>
-    <div
-      style="display: flex; justify-content: end; align-items: end; gap: 50px"
-    >
-      <button>
-        <a href="/login">Login</a>
-      </button>
-      <button>
-        <a href="/signup">Signup</a>
-      </button>
+<nav class="navbar">
+  <div class="container navbar-content">
+    <a class="navbar-brand" href="#">Resume AI Summarizer</a>
+    <div class="nav-buttons">
+      <a href="/login" class="btn btn-outline">Login</a>
+      <a href="/signup" class="btn btn-primary">Sign Up</a>
     </div>
   </div>
+</nav>
 
-  <div style="display: flex; flex-direction: row; width: 100%">
-    <div style="width: 50%">{% block upload_content %}{% endblock %}</div>
+<section class="hero">
+  <div class="container">
+    <h1>Revolutionize Your Job Search</h1>
+    <p>
+      Use AI to match your resume with job descriptions and stand out from the
+      crowd.
+    </p>
+    <a href="/signup" class="btn btn-primary">Get Started</a>
+  </div>
+</section>
 
-    <div class="compare-section text-center" style="width: 50%">
-      <h3>Match Resume with Job Description</h3>
-      <form action="{{ url_for('app.compare') }}" method="POST">
-        <textarea
-          class="form-control"
-          placeholder="Enter Job Description"
-          name="job_description"
-          rows="4"
-          style="width: 50%"
-        ></textarea>
-        <button type="submit" class="btn btn-primary">Compare</button>
-      </form>
+<section class="feature-section">
+  <div class="container">
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>AI-Powered Resume Analysis</h3>
+        <p>
+          Our advanced AI algorithms analyze your resume to extract key
+          information and skills.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Job Description Matching</h3>
+        <p>
+          Compare your resume against job descriptions to see how well you match
+          the requirements.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Improve Your Chances</h3>
+        <p>
+          Get insights on how to tailor your resume for specific job
+          opportunities.
+        </p>
+      </div>
     </div>
   </div>
-
-  <div class="uploaded-files">
-    <h2>Uploaded Files</h2>
-    <div class="table-container">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Extracted Text</th>
-            <th>AI Generated Text</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pdf in uploaded_pdfs %}
-          <tr>
-            <td>{{ pdf[1] }}</td>
-            <td>{{ pdf[2] }}</td>
-            <td>{{ pdf[3] }}</td>
-            <td
-              style="
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-                align-items: center;
-              "
-            >
-              <form action="/delete/{{pdf[0]}}" method="POST">
-                <button type="submit" class="delete-button">Delete</button>
-              </form>
-              <form action="/view/{{pdf[0]}}" method="GET">
-                <button type="submit" class="button">View</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</section>
 {% endblock %}

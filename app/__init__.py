@@ -25,5 +25,5 @@ def create_app():
 
     from .models import init_db
     init_db()
-
+    
     return app

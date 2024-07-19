@@ -1,56 +1,97 @@
 {% extends "base.html" %} {% block head %} {{ super() }}
 <style>
   body {
-    font-family: Arial, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
   }
   .container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
   }
-  .header,
-  .content {
-    background: #fff;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  .header {
+  h1 {
     text-align: center;
-    padding-bottom: 0;
+    color: #1877f2;
+    margin-bottom: 1.5rem;
   }
-  .content h3 {
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #333;
+  }
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  button {
+    background-color: #1877f2;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #166fe5;
   }
   .error {
-    color: red;
-    margin: 10px;
+    color: #d93025;
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .signup-link {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .signup-link a {
+    color: #1877f2;
+    text-decoration: none;
+  }
+  .signup-link a:hover {
+    text-decoration: underline;
   }
 </style>
 {% endblock %} {% block body %}
 <div class="container">
-  <h1>LOGIN PAGE</h1>
+  <h1>Login</h1>
   <form action="{{ url_for('auth.login') }}" method="POST">
-    <div>
-      <label for="">email</label>
-      <input name="email" type="text" />
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required />
     </div>
-    <div>
-      <label for="">password</label>
-      <input name="password" type="text" />
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
     </div>
-    <button type="submit">Sumbit</button>
+    <button type="submit">Log In</button>
   </form>
   {% if error %}
   <div class="error">{{ error }}</div>
   {% endif %}
-  <button>
-    <a href="/signup">Signup</a>
-  </button>
+  <div class="signup-link">
+    Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up</a>
+  </div>
 </div>
 {% endblock %}

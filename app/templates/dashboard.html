@@ -1,36 +1,381 @@
 {% extends "base.html" %} {% block head %} {{ super() }}
 <style>
+  :root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5f7fa;
+    --text-color: #333333;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
   body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+    font-family: "Inter", sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
   }
+
   .container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+    max-width: 1200px;
+    padding: 2rem;
+    margin: 0 auto;
   }
-  .header,
-  .content {
-    background: #fff;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  .header {
+
+  .dashboard-header {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
     text-align: center;
-    padding-bottom: 0;
   }
-  .content h3 {
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+
+  .dashboard-header h1 {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin: 0;
+  }
+
+  .content-section {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+  }
+
+  .content-section h2,
+  .content-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  .form-control {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s ease;
+    width: 100%;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+  }
+
+  .btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #3a7bc8;
+  }
+
+  .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #c0392b;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 1rem;
+  }
+
+  .table th,
+  .table td {
+    border: none;
+    padding: 1rem;
+    text-align: left;
+  }
+
+  .table th {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  .table tbody tr {
+    transition: background-color 0.3s ease;
+  }
+
+  .table tbody tr:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+  }
+
+  .truncate {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-input-wrapper input[type="file"] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .file-input-wrapper .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .horizontal-sections {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .horizontal-sections > div {
+    flex: 1;
+  }
+
+  .textarea-wrapper {
+    margin-bottom: 1rem;
+  }
+
+  .textarea-wrapper textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .file-list {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+  }
+
+  .file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+  }
+
+  .remove-file {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .horizontal-sections {
+      flex-direction: column;
+    }
   }
 </style>
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+  rel="stylesheet"
+/>
 {% endblock %} {% block body %}
 <div class="container">
-  <h1>DASHBOARD PAGE</h1>
-  <h1>name: {{ name }}</h1>
+  <div class="dashboard-header">
+    <h1>Resume AI Summarizer</h1>
+  </div>
+
+  <div class="horizontal-sections">
+    <div class="content-section">
+      <h2>Upload PDF</h2>
+      <form
+        action="/upload"
+        method="post"
+        enctype="multipart/form-data"
+        class="upload-form"
+        id="uploadForm"
+      >
+        <div class="file-input-wrapper">
+          <button class="btn btn-primary" type="button">Choose Files</button>
+          <input
+            type="file"
+            id="pdfs"
+            name="pdfs"
+            accept="application/pdf"
+            multiple
+          />
+        </div>
+        <div id="fileList" class="file-list" style="display: none"></div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+
+    <div class="content-section">
+      <h3>Match Resume with Job Description</h3>
+      <form action="{{ url_for('app.compare') }}" method="POST">
+        <div class="textarea-wrapper">
+          <textarea
+            class="form-control"
+            placeholder="Enter Job Description"
+            name="job_description"
+            rows="4"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Compare</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h3>Uploaded Files</h3>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Extracted Text</th>
+            <th>AI Generated Text</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pdf in uploaded_pdfs %}
+          <tr>
+            <td class="truncate">{{ pdf[1] }}</td>
+            <td class="truncate">{{ pdf[2] }}</td>
+            <td class="truncate">{{ pdf[3] }}</td>
+            <td>
+              <div class="action-buttons">
+                <form
+                  action="/delete/{{pdf[0]}}"
+                  method="POST"
+                  class="d-inline"
+                >
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    Delete
+                  </button>
+                </form>
+                <form action="/view/{{pdf[0]}}" method="GET" class="d-inline">
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    View
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fileInput = document.getElementById("pdfs");
+      const fileList = document.getElementById("fileList");
+      const uploadForm = document.getElementById("uploadForm");
+
+      fileInput.addEventListener("change", function () {
+        fileList.innerHTML = "";
+        fileList.style.display = "block";
+
+        Array.from(this.files).forEach((file, index) => {
+          const fileItem = document.createElement("div");
+          fileItem.className = "file-item";
+
+          const fileName = document.createElement("span");
+          fileName.className = "file-name";
+          fileName.textContent = file.name;
+
+          const removeButton = document.createElement("button");
+          removeButton.className = "remove-file";
+          removeButton.textContent = "×";
+          removeButton.onclick = function () {
+            fileItem.remove();
+            updateFileInput();
+          };
+
+          fileItem.appendChild(fileName);
+          fileItem.appendChild(removeButton);
+          fileList.appendChild(fileItem);
+        });
+
+        if (this.files.length === 0) {
+          fileList.style.display = "none";
+        }
+      });
+
+      function updateFileInput() {
+        const remainingFiles = Array.from(
+          fileList.querySelectorAll(".file-item")
+        ).map((item) => item.querySelector(".file-name").textContent);
+
+        const newFileList = new DataTransfer();
+        Array.from(fileInput.files).forEach((file) => {
+          if (remainingFiles.includes(file.name)) {
+            newFileList.items.add(file);
+          }
+        });
+
+        fileInput.files = newFileList.files;
+
+        if (fileInput.files.length === 0) {
+          fileList.style.display = "none";
+        }
+      }
+
+      uploadForm.addEventListener("submit", function (e) {
+        if (fileInput.files.length === 0) {
+          e.preventDefault();
+          alert("Please select at least one file to upload.");
+        }
+      });
+    });
+  </script>
 </div>
 {% endblock %}

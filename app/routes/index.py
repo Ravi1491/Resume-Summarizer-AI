@@ -11,12 +11,12 @@ app = Blueprint('app', __name__)
 
 @app.route('/')
 def index():
-    uploaded_pdfs = get_all_pdfs()
-    return render_template('upload.html', uploaded_pdfs=uploaded_pdfs)
+    return render_template('index.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['POST', 'GET'])
 def dashboard():
-    return render_template('dashboard.html')
+    uploaded_pdfs = get_all_pdfs()
+    return render_template('dashboard.html', uploaded_pdfs=uploaded_pdfs)
 
 @app.route('/compare', methods=['POST', 'GET'])
 def compare():
@@ -51,7 +51,7 @@ def view_pdf(id):
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_pdf(id):
     delete_pdf_entry(id)
-    return redirect(url_for('app.index'))
+    return redirect(url_for('app.dashboard'))
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -111,4 +111,4 @@ def upload_file():
     else:
         flash('No valid files uploaded')
 
-    return redirect(url_for('app.index'))
+    return redirect(url_for('app.dashboard'))

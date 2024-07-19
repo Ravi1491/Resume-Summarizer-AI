@@ -1,33 +1,24 @@
-ARG PYTHON_VER=3.11
+# Use an official Python runtime as the base image
+FROM python:3.9-slim
 
-FROM python:${PYTHON_VER} AS base
-
+# Set the working directory in the container
 WORKDIR /app
 
-ENV PYTHONUNBUFFERED=1
+# Copy the requirements file into the container
+COPY requirements.txt .
 
-# Install Poetry (uncomment if you want to use Poetry)
-# RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
-#     cd /usr/local/bin && \
-#     ln -s /opt/poetry/bin/poetry && \
-#     poetry config virtualenvs.create false
+# Install the required packages
+RUN pip install --no-cache-dir -r requirements.txt
 
-# COPY ./pyproject.toml ./poetry.lock* /app/
-# RUN poetry install --no-root
+# Copy the rest of the application code into the container
+COPY . .
 
-COPY ./requirements.txt /app/
-RUN pip install -r requirements.txt
+# Set environment variables
+ENV FLASK_APP=run.py
+ENV CONFIG_MODE=production
 
-COPY . /app
+# Expose the port the app runs on
+EXPOSE 5000
 
-FROM python:${PYTHON_VER}-slim
-
-WORKDIR /app
-
-COPY --from=base /app /app
-
-# Install runtime dependencies in the final image
-COPY ./requirements.txt /app/
-RUN pip install -r requirements.txt
-
-CMD ["uvicorn", "run:app", "--host", "0.0.0.0", "--port", "3000"]
+# Run the application
+CMD ["python", "run.py"]

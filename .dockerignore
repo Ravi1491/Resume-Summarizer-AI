@@ -38,3 +38,11 @@ lerna-debug.log*
 /dist
 chart
 .buildkite
+/venv
+/Resumes
+/uploads
+database.db
+/flask_session
+.env
+__pycache__/
+.vercel
