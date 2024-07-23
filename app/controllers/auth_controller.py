@@ -1,8 +1,8 @@
 import bcrypt
-from flask import render_template, redirect, url_for, session
-
+from flask import redirect, url_for, session
+from datetime import datetime, timedelta
+import jwt
 from ..models import get_user_email,create_user
-
 
 def login(email, password):
   user = get_user_email(email)
@@ -15,8 +15,16 @@ def login(email, password):
   if not is_valid:
     session['login_error'] = "Invalid password"
     return redirect(url_for('auth.login'))
+  
+  session['logged_in'] = True
+  token = jwt.encode({
+    'email': email,
+    'exp': datetime.utcnow() + timedelta(hours=24)
+  }, 'SECRET_KEY', algorithm='HS256')
+  
+  session['token'] = token
 
-  return redirect(url_for('app.dashboard'))
+  return redirect(url_for('dashboard.home'))
 
 def signup(name, email, password):
   user = get_user_email(email)
@@ -27,5 +35,17 @@ def signup(name, email, password):
   hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
   create_user(name=name,email=email,password=hashed_password)
+
+  session['logged_in'] = True
+  token = jwt.encode({
+    'email': email,
+    'exp': datetime.utcnow() + timedelta(hours=24)
+  }, 'SECRET_KEY', algorithm='HS256')
   
-  return redirect(url_for('app.dashboard'))
+  session['token'] = token
+
+  return redirect(url_for('dashboard.home'))
+
+def logout():
+  session.clear()
+  return redirect(url_for('auth.login'))

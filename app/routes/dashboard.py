@@ -6,15 +6,18 @@ import os
 import sqlite3
 import json
 from ..utils import dict_to_html_table
+from .index import token_required
 
 dashboard = Blueprint('dashboard', __name__)
 
-@dashboard.route('/dashboard', methods=['POST', 'GET'])
-def get_all_resumes():
+@dashboard.route('/dashboard')
+@token_required
+def home():
     uploaded_pdfs = get_all_pdfs()
     return render_template('dashboard.html', uploaded_pdfs=uploaded_pdfs)
 
-@dashboard.route('/compare', methods=['POST', 'GET'])
+@dashboard.route('/compare-resume', methods=['POST', 'GET'])
+@token_required
 def compare():
     if request.method == 'POST' and 'job_description' in request.form:
         allPdfs = get_all_pdfs()
@@ -30,10 +33,11 @@ def compare():
             'comparison_results': final_res
         }
         return render_template('compare.html', data=data)
-        
+
     return render_template('compare.html')
 
 @dashboard.route('/view/<int:id>')
+@token_required
 def view_pdf(id):
     pdf = get_pdf_by_id(id)
     if pdf:
@@ -42,14 +46,16 @@ def view_pdf(id):
         return render_template('view.html', pdf=html_table)
     else:
         flash('PDF not found')
-        return redirect(url_for('app.index'))
+        return render_template('fallback.html')
 
 @dashboard.route('/delete/<int:id>', methods=['POST'])
+@token_required
 def delete_pdf(id):
     delete_pdf_entry(id)
-    return redirect(url_for('app.dashboard'))
+    return redirect(url_for('dashboard.home'))
 
 @dashboard.route('/upload', methods=['POST'])
+@token_required
 def upload_file():
     if 'pdfs' not in request.files:
         flash('No file part')
@@ -107,4 +113,4 @@ def upload_file():
     else:
         flash('No valid files uploaded')
 
-    return redirect(url_for('app.dashboard'))
+    return redirect(url_for('dashboard.home'))

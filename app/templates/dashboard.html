@@ -215,6 +215,23 @@
     padding: 0 0.5rem;
   }
 
+  .logout-button {
+    position: absolute;
+    top: 3rem;
+    right: 1rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .logout-button:hover {
+    background-color: #c0392b;
+  }
+
   @media (max-width: 768px) {
     .horizontal-sections {
       flex-direction: column;
@@ -226,156 +243,167 @@
   rel="stylesheet"
 />
 {% endblock %} {% block body %}
-<div class="container">
-  <div class="dashboard-header">
-    <h1>Resume AI Summarizer</h1>
-  </div>
+<div>
+  <form
+    action="{{ url_for('auth.logout') }}"
+    method="POST"
+    style="display: inline"
+  >
+    <button type="submit" id="logoutButton" class="logout-button">
+      Logout
+    </button>
+  </form>
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>Resume AI Summarizer</h1>
+    </div>
 
-  <div class="horizontal-sections">
-    <div class="content-section">
-      <h2>Upload PDF</h2>
-      <form
-        action="/upload"
-        method="post"
-        enctype="multipart/form-data"
-        class="upload-form"
-        id="uploadForm"
-      >
-        <div class="file-input-wrapper">
-          <button class="btn btn-primary" type="button">Choose Files</button>
-          <input
-            type="file"
-            id="pdfs"
-            name="pdfs"
-            accept="application/pdf"
-            multiple
-          />
-        </div>
-        <div id="fileList" class="file-list" style="display: none"></div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
+    <div class="horizontal-sections">
+      <div class="content-section">
+        <h2>Upload PDF</h2>
+        <form
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="upload-form"
+          id="uploadForm"
+        >
+          <div class="file-input-wrapper">
+            <button class="btn btn-primary" type="button">Choose Files</button>
+            <input
+              type="file"
+              id="pdfs"
+              name="pdfs"
+              accept="application/pdf"
+              multiple
+            />
+          </div>
+          <div id="fileList" class="file-list" style="display: none"></div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+      </div>
+
+      <div class="content-section">
+        <h3>Match Resume with Job Description</h3>
+        <form action="{{ url_for('dashboard.compare') }}" method="POST">
+          <div class="textarea-wrapper">
+            <textarea
+              class="form-control"
+              placeholder="Enter Job Description"
+              name="job_description"
+              rows="4"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Compare</button>
+        </form>
+      </div>
     </div>
 
     <div class="content-section">
-      <h3>Match Resume with Job Description</h3>
-      <form action="{{ url_for('app.compare') }}" method="POST">
-        <div class="textarea-wrapper">
-          <textarea
-            class="form-control"
-            placeholder="Enter Job Description"
-            name="job_description"
-            rows="4"
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Compare</button>
-      </form>
+      <h3>Uploaded Files</h3>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Extracted Text</th>
+              <th>AI Generated Text</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pdf in uploaded_pdfs %}
+            <tr>
+              <td class="truncate">{{ pdf[1] }}</td>
+              <td class="truncate">{{ pdf[2] }}</td>
+              <td class="truncate">{{ pdf[3] }}</td>
+              <td>
+                <div class="action-buttons">
+                  <form
+                    action="/delete/{{pdf[0]}}"
+                    method="POST"
+                    class="d-inline"
+                  >
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      Delete
+                    </button>
+                  </form>
+                  <form action="/view/{{pdf[0]}}" method="GET" class="d-inline">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                      View
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("pdfs");
+        const fileList = document.getElementById("fileList");
+        const uploadForm = document.getElementById("uploadForm");
 
-  <div class="content-section">
-    <h3>Uploaded Files</h3>
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Extracted Text</th>
-            <th>AI Generated Text</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pdf in uploaded_pdfs %}
-          <tr>
-            <td class="truncate">{{ pdf[1] }}</td>
-            <td class="truncate">{{ pdf[2] }}</td>
-            <td class="truncate">{{ pdf[3] }}</td>
-            <td>
-              <div class="action-buttons">
-                <form
-                  action="/delete/{{pdf[0]}}"
-                  method="POST"
-                  class="d-inline"
-                >
-                  <button type="submit" class="btn btn-danger btn-sm">
-                    Delete
-                  </button>
-                </form>
-                <form action="/view/{{pdf[0]}}" method="GET" class="d-inline">
-                  <button type="submit" class="btn btn-primary btn-sm">
-                    View
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const fileInput = document.getElementById("pdfs");
-      const fileList = document.getElementById("fileList");
-      const uploadForm = document.getElementById("uploadForm");
+        fileInput.addEventListener("change", function () {
+          fileList.innerHTML = "";
+          fileList.style.display = "block";
 
-      fileInput.addEventListener("change", function () {
-        fileList.innerHTML = "";
-        fileList.style.display = "block";
+          Array.from(this.files).forEach((file, index) => {
+            const fileItem = document.createElement("div");
+            fileItem.className = "file-item";
 
-        Array.from(this.files).forEach((file, index) => {
-          const fileItem = document.createElement("div");
-          fileItem.className = "file-item";
+            const fileName = document.createElement("span");
+            fileName.className = "file-name";
+            fileName.textContent = file.name;
 
-          const fileName = document.createElement("span");
-          fileName.className = "file-name";
-          fileName.textContent = file.name;
+            const removeButton = document.createElement("button");
+            removeButton.className = "remove-file";
+            removeButton.textContent = "×";
+            removeButton.onclick = function () {
+              fileItem.remove();
+              updateFileInput();
+            };
 
-          const removeButton = document.createElement("button");
-          removeButton.className = "remove-file";
-          removeButton.textContent = "×";
-          removeButton.onclick = function () {
-            fileItem.remove();
-            updateFileInput();
-          };
+            fileItem.appendChild(fileName);
+            fileItem.appendChild(removeButton);
+            fileList.appendChild(fileItem);
+          });
 
-          fileItem.appendChild(fileName);
-          fileItem.appendChild(removeButton);
-          fileList.appendChild(fileItem);
-        });
-
-        if (this.files.length === 0) {
-          fileList.style.display = "none";
-        }
-      });
-
-      function updateFileInput() {
-        const remainingFiles = Array.from(
-          fileList.querySelectorAll(".file-item")
-        ).map((item) => item.querySelector(".file-name").textContent);
-
-        const newFileList = new DataTransfer();
-        Array.from(fileInput.files).forEach((file) => {
-          if (remainingFiles.includes(file.name)) {
-            newFileList.items.add(file);
+          if (this.files.length === 0) {
+            fileList.style.display = "none";
           }
         });
 
-        fileInput.files = newFileList.files;
+        function updateFileInput() {
+          const remainingFiles = Array.from(
+            fileList.querySelectorAll(".file-item")
+          ).map((item) => item.querySelector(".file-name").textContent);
 
-        if (fileInput.files.length === 0) {
-          fileList.style.display = "none";
-        }
-      }
+          const newFileList = new DataTransfer();
+          Array.from(fileInput.files).forEach((file) => {
+            if (remainingFiles.includes(file.name)) {
+              newFileList.items.add(file);
+            }
+          });
 
-      uploadForm.addEventListener("submit", function (e) {
-        if (fileInput.files.length === 0) {
-          e.preventDefault();
-          alert("Please select at least one file to upload.");
+          fileInput.files = newFileList.files;
+
+          if (fileInput.files.length === 0) {
+            fileList.style.display = "none";
+          }
         }
+
+        uploadForm.addEventListener("submit", function (e) {
+          if (fileInput.files.length === 0) {
+            e.preventDefault();
+            alert("Please select at least one file to upload.");
+          }
+        });
       });
-    });
-  </script>
+    </script>
+  </div>
 </div>
 {% endblock %}
