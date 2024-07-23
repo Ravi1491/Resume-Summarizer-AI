@@ -23,18 +23,18 @@ def get_resume_pdf_text(file):
     fake_file_handle.close()
     return text
 
-def generate_text(prompt, text):
+def groq_response(prompt):
     client = Groq(api_key=current_app.config['GROQ_API_KEY'])
-    combined_prompt = f"{prompt}\n\n{text}" if text else prompt
     chat_completion = client.chat.completions.create(
         messages=[
             {
                 "role": "user",
-                "content": combined_prompt,
+                "content": prompt,
             }
         ],
         model="llama3-70b-8192",
     )
+    
     return chat_completion.choices[0].message.content
 
 def match_job_description(file_name, ai_text, job_description):

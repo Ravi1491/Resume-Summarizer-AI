@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, flash, url_for, Blueprint, current_app
 from werkzeug.utils import secure_filename
 from ..models import get_all_pdfs, delete_pdf_entry, get_pdf_by_id
-from ..utils import get_resume_pdf_text, generate_text, allowed_file,match_job_description
+from ..utils import get_resume_pdf_text, groq_response, allowed_file,match_job_description
 import os
 import sqlite3
 import json
@@ -103,7 +103,8 @@ def upload_file():
             Even Don't include Here is the summary of the resume in JSON format: 
             Here is the text from the resume: {text}"""
 
-            generated_text = generate_text(prompt, text)
+            combined_prompt = f"{prompt}\n\n{text}" if text else prompt
+            generated_text = groq_response(combined_prompt)
 
             with sqlite3.connect('database.db') as conn:
                 cursor = conn.cursor()
