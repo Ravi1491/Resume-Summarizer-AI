@@ -5,7 +5,7 @@ from ..utils import get_resume_pdf_text, groq_response, allowed_file,match_job_d
 import os
 import sqlite3
 import json
-from ..utils import dict_to_html_table
+from ..utils import dict_to_html_table,resume_template
 from .index import token_required
 
 dashboard = Blueprint('dashboard', __name__)
@@ -49,6 +49,27 @@ def view_pdf(id):
   else:
     flash('PDF not found')
     return render_template('fallback.html')
+  
+@dashboard.route('/generate-resume', methods=['GET','POST'])
+def generate_resume():
+  if request.method == 'POST':
+    data = {
+      "personnal_info" : {
+        "name": request.form['name'] or "John Doe",
+        "email": request.form['email'] or "jhonDoe@gmail.com",
+        "phone": request.form['phone'] or "1234567890",
+        "linkedin": request.form['linkedin'] or "linkedin.com/in/johndoe",
+        "github": request.form['github'] or "github.com/johndoe",
+      },
+      "work_experience": {
+        "company": request.form['company-name'],
+        "position": request.form['position'],
+        "description": request.form['description'], 
+      }
+    }
+    
+  html = resume_template(data)
+  return render_template('resume.html', pdf=html)
 
 @dashboard.route('/delete/<int:id>', methods=['POST'])
 @token_required

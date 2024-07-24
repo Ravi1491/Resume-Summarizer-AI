@@ -1,0 +1,438 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<style>
+  :root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    font-family: "Roboto", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+
+  .input-side {
+    width: 50%;
+    overflow-y: auto;
+    padding-right: 1rem;
+  }
+
+  .resume-side {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header,
+  .content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+  }
+
+  .header {
+    text-align: center;
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+
+  .header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+  }
+
+  .content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .content h3 {
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .ai-summarized p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-color);
+  }
+
+  .collapsible {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .active,
+  .collapsible:hover {
+    background-color: #2980b9;
+  }
+
+  .collapsible:after {
+    content: "\002B";
+    color: white;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+  }
+
+  .active:after {
+    content: "\2212";
+  }
+
+  .collapse-content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
+    border-radius: 0 0 8px 8px;
+  }
+
+  .input-group {
+    margin-bottom: 1rem;
+  }
+
+  .input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+
+    .input-side,
+    .resume-side {
+      width: 100%;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+    }
+
+    .content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+  rel="stylesheet"
+/>
+{% endblock %}{% block body %}
+<div class="container">
+  <div class="input-side">
+    <form
+      id="resumeForm"
+      action="{{ url_for('dashboard.generate_resume') }}"
+      method="POST"
+    >
+      <div>
+        <button type="button" class="collapsible">Personal Information</button>
+        <div class="collapse-content">
+          <div class="input-group">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div class="input-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="input-group">
+            <label for="phone">Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div class="input-group">
+            <label for="linkedin">LinkedIn:</label>
+            <input
+              type="url"
+              id="linkedin"
+              name="linkedin"
+              placeholder="Enter your LinkedIn URL"
+            />
+          </div>
+          <div class="input-group">
+            <label for="github">GitHub:</label>
+            <input
+              type="url"
+              id="github"
+              name="github"
+              placeholder="Enter your GitHub URL"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="collapsible">Work Experience</button>
+        <div class="collapse-content">
+          <div class="input-group">
+            <label for="position">Position:</label>
+            <input
+              type="text"
+              id="position"
+              name="position"
+              placeholder="Enter your position"
+            />
+          </div>
+          <div class="input-group">
+            <label for="company">Company Name:</label>
+            <input
+              type="text"
+              id="company-name"
+              name="company-name"
+              placeholder="Enter your Comapny Name"
+            />
+          </div>
+          <div class="input-group">
+            <label for="description">Description:</label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              placeholder="Enter your description"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- <div>
+        <button type="button" class="collapsible">Projects</button>
+        <div class="collapse-content">
+          <div class="input-group">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div class="input-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="input-group">
+            <label for="phone">Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div class="input-group">
+            <label for="linkedin">LinkedIn:</label>
+            <input
+              type="url"
+              id="linkedin"
+              name="linkedin"
+              placeholder="Enter your LinkedIn URL"
+            />
+          </div>
+          <div class="input-group">
+            <label for="github">GitHub:</label>
+            <input
+              type="url"
+              id="github"
+              name="github"
+              placeholder="Enter your GitHub URL"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="collapsible">Skills</button>
+        <div class="collapse-content">
+          <div class="input-group">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div class="input-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="input-group">
+            <label for="phone">Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div class="input-group">
+            <label for="linkedin">LinkedIn:</label>
+            <input
+              type="url"
+              id="linkedin"
+              name="linkedin"
+              placeholder="Enter your LinkedIn URL"
+            />
+          </div>
+          <div class="input-group">
+            <label for="github">GitHub:</label>
+            <input
+              type="url"
+              id="github"
+              name="github"
+              placeholder="Enter your GitHub URL"
+            />
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="collapsible">Education</button>
+        <div class="collapse-content">
+          <div class="input-group">
+            <label for="name">Name:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+            />
+          </div>
+          <div class="input-group">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+            />
+          </div>
+          <div class="input-group">
+            <label for="phone">Phone:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="Enter your phone number"
+            />
+          </div>
+          <div class="input-group">
+            <label for="linkedin">LinkedIn:</label>
+            <input
+              type="url"
+              id="linkedin"
+              name="linkedin"
+              placeholder="Enter your LinkedIn URL"
+            />
+          </div>
+          <div class="input-group">
+            <label for="github">GitHub:</label>
+            <input
+              type="url"
+              id="github"
+              name="github"
+              placeholder="Enter your GitHub URL"
+            />
+          </div>
+        </div>
+      </div> -->
+
+      <button type="submit" id="generateResume">Generate Resume</button>
+    </form>
+  </div>
+
+  <div class="resume-side">
+    <div class="header">
+      <h1>Generated Resume</h1>
+    </div>
+    <div class="content">
+      <div class="ai-summarized">
+        <p>{{ pdf|safe }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var coll = document.getElementsByClassName("collapsible");
+  var i;
+
+  for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function () {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  }
+</script>
+{% endblock %}
