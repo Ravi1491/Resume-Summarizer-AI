@@ -11,7 +11,7 @@ def init_db():
                             filename TEXT NOT NULL,
                             text TEXT NULL,
                             ai_text TEXT NULL,
-                            upload_id INTEGER
+                            user_id INTEGER NOT NULL
                         )''')
         cursor.execute(migration.create_user_table)
         conn.commit()
@@ -39,6 +39,12 @@ def get_pdf_by_id(id):
         cursor = conn.cursor()
         cursor.execute('SELECT filename, text, ai_text FROM pdfs WHERE id = ?', (id,))
         return cursor.fetchone()
+    
+def get_resumes_by_user_id(user_id):
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, filename, text, ai_text FROM pdfs WHERE user_id = ?', (user_id,))
+        return cursor.fetchall()
 
 def delete_pdf_entry(id):
     with sqlite3.connect('database.db') as conn:

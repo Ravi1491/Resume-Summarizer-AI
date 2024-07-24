@@ -13,6 +13,7 @@ def token_required(fun):
       return redirect(url_for('auth.login'))
     try:
       payload = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
+      session['user'] = payload
     except:
       return redirect(url_for('auth.login'))
     return fun(*args, **kwargs)

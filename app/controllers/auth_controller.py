@@ -18,6 +18,7 @@ def login(email, password):
   
   session['logged_in'] = True
   token = jwt.encode({
+    'id': user[0],
     'email': email,
     'exp': datetime.utcnow() + timedelta(hours=24)
   }, 'SECRET_KEY', algorithm='HS256')
@@ -35,9 +36,11 @@ def signup(name, email, password):
   hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
   create_user(name=name,email=email,password=hashed_password)
+  new_uer = get_user_email(email)
 
   session['logged_in'] = True
   token = jwt.encode({
+    'id': new_uer[0],
     'email': email,
     'exp': datetime.utcnow() + timedelta(hours=24)
   }, 'SECRET_KEY', algorithm='HS256')
