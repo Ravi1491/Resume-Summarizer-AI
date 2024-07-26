@@ -121,6 +121,13 @@ def dict_to_html_table(data):
     return html
   
 def resume_template(data):
+    print("===============================")
+    for description in data['work_experience']['description']:
+        print(description)
+        
+        
+# ([f'<li>{description}</li>' for description in data['work_experience']['description']])
+    
     html = f'''
     <body style="font-family: Calibri, sans-serif; line-height: 1.75; color: #333; margin: 0; padding: 20px;">
         <header style="text-align: center; margin-bottom: 20px;">
@@ -131,18 +138,23 @@ def resume_template(data):
                 <span>{data['personnal_info']['github']}</span>
             </div>
         </header>
-
+    
         <div style="margin-bottom: 15px;">
             <h2 style="font-size: 18px; border-bottom: 1px solid #333; margin-bottom: 10px; margin: 0;">
                 EXPERIENCE
             </h2>
             <div style="margin-bottom: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                    <h3 style="font-size: 16px; margin: 0;">Software Developer Engineer</h3>
+                    <h3 style="font-size: 16px; margin: 0;">{data['work_experience']['position']}</h3>
                     <span style="font-style: italic;">January 2023 - Present</span>
                 </div>
-                <div style="font-weight: bold;">Glue Labs Private Limited</div>
+                <div style="font-weight: bold;">{data['work_experience']['company']}</div>
                 <ul style="margin: 5px 0; padding-left: 20px;">
+                    <li>
+                        Analytics Server: Developed an analytics server in Flask to process
+                        Shopify store data, using ClickHouse for high-performance storage
+                        and querying. Improving data processing speeds by 50%.
+                    </li>
                     <li>
                         Architected AI-Driven Backend Infrastructure: Led development of
                         backend systems with NodeJs and NestJs, defining API flows, database
@@ -158,11 +170,6 @@ def resume_template(data):
                     <li>
                         Role-Based Access Control (RBAC): Established RBAC mechanisms to
                         bolster data security, reducing access-related incidents by 40%.
-                    </li>
-                    <li>
-                        Analytics Server: Developed an analytics server in Flask to process
-                        Shopify store data, using ClickHouse for high-performance storage
-                        and querying. Improving data processing speeds by 50%.
                     </li>
                     <li>
                         CRM and Workflow Automation: Integrated CRM and automated email
@@ -209,7 +216,7 @@ def resume_template(data):
                 </ul>
             </div>
         </div>
-
+    
         <div style="margin-bottom: 15px;">
             <h2 style="font-size: 18px; border-bottom: 1px solid #333; margin-bottom: 10px; margin: 0;">
                 PROJECTS
@@ -256,7 +263,7 @@ def resume_template(data):
                 </ul>
             </div>
         </div>
-
+    
         <div style="margin-bottom: 15px;">
             <h2 style="font-size: 18px; border-bottom: 1px solid #333; margin-bottom: 10px; margin: 0;">
                 SKILLS
@@ -268,7 +275,7 @@ def resume_template(data):
                 Flask, Fast API, REST APIs, GraphQL
             </p>
         </div>
-
+    
         <div style="margin-bottom: 15px;">
             <h2 style="font-size: 18px; border-bottom: 1px solid #333; margin-bottom: 10px; margin: 0;">
                 EDUCATION
@@ -279,6 +286,5 @@ def resume_template(data):
             <div>Bennett University • Greater Noida • 2023 • 8.94</div>
         </div>
     </body>
-    </html>
-      '''
+    '''
     return html

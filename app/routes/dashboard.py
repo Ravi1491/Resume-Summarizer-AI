@@ -50,26 +50,41 @@ def view_pdf(id):
     flash('PDF not found')
     return render_template('fallback.html')
   
-@dashboard.route('/generate-resume', methods=['GET','POST'])
+@dashboard.route('/generate-resume', methods=['GET', 'POST'])
 def generate_resume():
-  if request.method == 'POST':
-    data = {
-      "personnal_info" : {
-        "name": request.form['name'] or "John Doe",
-        "email": request.form['email'] or "jhonDoe@gmail.com",
-        "phone": request.form['phone'] or "1234567890",
-        "linkedin": request.form['linkedin'] or "linkedin.com/in/johndoe",
-        "github": request.form['github'] or "github.com/johndoe",
-      },
-      "work_experience": {
-        "company": request.form['company-name'],
-        "position": request.form['position'],
-        "description": request.form['description'], 
-      }
-    }
-    
-  html = resume_template(data)
-  return render_template('resume.html', pdf=html)
+  if request.method == 'GET':
+    return render_template('resume.html', data={})
+
+  description_points = ["Worked on various projects"]
+  if len(request.form.get('description')) > 0:
+    description_points = request.form.get('description').split('\n')
+    description_points = [point.strip() for point in description_points if len(point.strip()) > 0]
+
+  print(description_points)
+  
+  data = {
+    "personnal_info": {
+        "name": request.form.get('name') if len(request.form.get('name')) > 0 else "John Doe",
+        "email": request.form.get('email') if len(request.form.get('email')) > 0 else "johnDoe@gmail.com",
+        "phone": request.form.get('phone') if len(request.form.get('phone')) > 0 else "1234567890",
+        "linkedin": request.form.get('linkedin') if len(request.form.get('linkedin')) > 0 else "linkedin.com/johndoe",
+        "github": request.form.get('github') if len(request.form.get('github')) > 0 else "github.com/johndoe",
+    },
+    "work_experience": {
+        "position": request.form.get('position') if len(request.form.get('position')) > 0 else "Software Developer",
+        "company": request.form.get('company-name') if len(request.form.get('company-name')) > 0 else "ABC Company",
+        "description": description_points,
+    },
+    "projects": {
+      "name": request.form.get('project-name') if len(request.form.get('project-name')) > 0 else "Project 1",
+      "link": request.form.get('project-link') if len(request.form.get('project-link')) > 0 else "project1.com",
+      "description": request.form.get('project-description') if len(request.form.get('project-description')) > 0 else "Project Description",
+    },
+    "skills": request.form.get('skills') if len(request.form.get('skills')) > 0 else "",
+  }
+
+  # html = resume_template(data)
+  return render_template('resume.html', data=data)
 
 @dashboard.route('/delete/<int:id>', methods=['POST'])
 @token_required

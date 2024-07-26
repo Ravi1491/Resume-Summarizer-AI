@@ -243,16 +243,11 @@
           </div>
           <div class="input-group">
             <label for="description">Description:</label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              placeholder="Enter your description"
-            />
+            <textarea name="description" rows="10" cols="96"></textarea>
           </div>
         </div>
       </div>
-      <!-- <div>
+      <div>
         <button type="button" class="collapsible">Projects</button>
         <div class="collapse-content">
           <div class="input-group">
@@ -306,49 +301,7 @@
         <button type="button" class="collapsible">Skills</button>
         <div class="collapse-content">
           <div class="input-group">
-            <label for="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Enter your name"
-            />
-          </div>
-          <div class="input-group">
-            <label for="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div class="input-group">
-            <label for="phone">Phone:</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              placeholder="Enter your phone number"
-            />
-          </div>
-          <div class="input-group">
-            <label for="linkedin">LinkedIn:</label>
-            <input
-              type="url"
-              id="linkedin"
-              name="linkedin"
-              placeholder="Enter your LinkedIn URL"
-            />
-          </div>
-          <div class="input-group">
-            <label for="github">GitHub:</label>
-            <input
-              type="url"
-              id="github"
-              name="github"
-              placeholder="Enter your GitHub URL"
-            />
+            <textarea name="skills" id="" cols="97" rows="10"></textarea>
           </div>
         </div>
       </div>
@@ -401,7 +354,7 @@
             />
           </div>
         </div>
-      </div> -->
+      </div>
 
       <button type="submit" id="generateResume">Generate Resume</button>
     </form>
@@ -413,7 +366,169 @@
     </div>
     <div class="content">
       <div class="ai-summarized">
-        <p>{{ pdf|safe }}</p>
+        <!-- <p>{{ pdf|safe }}</p> -->
+        <div
+          style="
+            font-family: Calibri, sans-serif;
+            line-height: 1.75;
+            color: #333;
+            margin: 0;
+          "
+        >
+          <header style="text-align: center; margin-bottom: 20px">
+            <h1 style="font-size: 24px; margin-bottom: 5px; margin: 0">
+              {{data['personnal_info']['name']}}
+            </h1>
+            <div style="font-size: 14px">
+              <span>{{data['personnal_info']['email']}}</span> •
+              <span>{{data['personnal_info']['phone']}}</span> •
+              <span>{{data['personnal_info']['linkedin']}}</span> •
+              <span>{{data['personnal_info']['github']}}</span>
+            </div>
+          </header>
+
+          <div style="margin-bottom: 15px">
+            <h2
+              style="
+                font-size: 18px;
+                border-bottom: 1px solid #333;
+                margin-bottom: 10px;
+                margin: 0;
+              "
+            >
+              EXPERIENCE
+            </h2>
+            <div style="margin-bottom: 10px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                "
+              >
+                <h2 style="font-size: 16px; margin: 0">
+                  {{data['work_experience']['position']}}
+                </h2>
+                <span style="font-style: italic">January 2023 - Present</span>
+              </div>
+              <div style="font-weight: bold">
+                {{data['work_experience']['company']}}
+              </div>
+              <ul style="margin: 5px 0; padding-left: 20px">
+                {% for description in data['work_experience']['description'] %}
+                <li>{{ description }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div style="margin-bottom: 10px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                "
+              >
+                <h2 style="font-size: 16px; margin: 0">
+                  {{data['work_experience']['position']}}
+                </h2>
+                <span style="font-style: italic">January 2023 - Present</span>
+              </div>
+              <div style="font-weight: bold">
+                {{data['work_experience']['company']}}
+              </div>
+              <ul style="margin: 5px 0; padding-left: 20px">
+                {% for description in data['work_experience']['description'] %}
+                <li>{{ description }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 15px">
+            <h1
+              style="
+                font-size: 18px;
+                border-bottom: 1px solid #333;
+                margin-bottom: 10px;
+                margin: 0;
+              "
+            >
+              PROJECTS
+            </h1>
+            <div style="margin-bottom: 10px">
+              <h2 style="font-size: 16px; margin: 0">
+                Vexio (Shopify Product Review Management)
+              </h2>
+              <div>github.com/Ravi1491/Vexio</div>
+              <ul style="margin: 5px 0; padding-left: 20px">
+                <li>
+                  Vexio is a powerful Shopify App designed to simplify and
+                  enhance your product review management process. With it, you
+                  can effortlessly collect and manage customer reviews for your
+                  Shopify store products.
+                </li>
+                <li>
+                  Engineered a robust automation system using NodeJs, Sequelize,
+                  PostgreSQL, and webhooks within Vexio, automatically
+                  dispatching review emails to customers post-purchase,
+                  fostering engagement and insights
+                </li>
+              </ul>
+            </div>
+            <div style="margin-bottom: 10px">
+              <h2 style="font-size: 16px; margin: 0">Resume Summarizer AI</h2>
+              <div>github.com/Ravi1491/Resume-Summarizer-AI</div>
+              <ul style="margin: 5px 0; padding-left: 20px">
+                <li>
+                  Leveraging the AI capabilities of the Groq service, the
+                  application generates concise and relevant summaries of the
+                  extracted resume text.
+                </li>
+                <li>
+                  Users can easily upload their PDF resumes. The application
+                  employs the pdfminer3 library to accurately extract text from
+                  these PDFs and are stored in an SQLite database.
+                </li>
+                <li>
+                  Users can compare their resumes with job descriptions to
+                  identify key matches and gaps, helping them tailor their
+                  applications effectively.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 15px">
+            <h2
+              style="
+                font-size: 18px;
+                border-bottom: 1px solid #333;
+                margin-bottom: 10px;
+                margin: 0;
+              "
+            >
+              SKILLS
+            </h2>
+            <p style="margin: 5px 0">{{ data["skills"] }}</p>
+          </div>
+
+          <div style="margin-bottom: 15px">
+            <h2
+              style="
+                font-size: 18px;
+                border-bottom: 1px solid #333;
+                margin-bottom: 10px;
+                margin: 0;
+              "
+            >
+              EDUCATION
+            </h2>
+            <p style="font-size: 16px; margin: 0">
+              Bachelor of Technology in Computer Science <br />Bennett
+              University • Greater Noida • 2023 • 8.94
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
