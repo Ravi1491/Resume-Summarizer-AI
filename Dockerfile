@@ -16,11 +16,11 @@ COPY . .
 # Set environment variables
 ARG GROQ_API_KEY
 ENV GROQ_API_KEY=$GROQ_API_KEY
-ENV FLASK_APP=run.py
+ENV FLASK_APP=app.py
 ENV CONFIG_MODE=production
 
 # Expose the port the app runs on
 EXPOSE 5000
 
 # Run the application
-CMD ["python", "run.py"]
+CMD ["python", "app.py"]
