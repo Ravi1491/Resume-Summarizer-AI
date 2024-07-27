@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, flash, url_for, Blueprint, current_app, session
 from werkzeug.utils import secure_filename
-from ..service import delete_pdf_entry, get_pdf_by_id, get_resumes_by_user_id
+from ..service1 import delete_pdf_entry, get_pdf_by_id, get_resumes_by_user_id
 from ..utils import get_resume_pdf_text, groq_response, allowed_file,match_job_description
 import os
 import sqlite3
