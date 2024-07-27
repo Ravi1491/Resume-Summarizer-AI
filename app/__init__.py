@@ -2,11 +2,13 @@ import os
 from flask import Flask
 from flask_session import Session
 from config import DevelopmentConfig, ProductionConfig
+from flask_migrate import Migrate, upgrade
 
-from .models import init_db
+from database import db
 from .routes.index import app as app_blueprint
 from .routes.auth import auth as auth_blueprint
 from .routes.dashboard import dashboard as dashboard_blueprint
+import database.models  
 
 def create_app():
     app = Flask(__name__)
@@ -18,15 +20,17 @@ def create_app():
 
     app.secret_key = app.config['SECRET_KEY']
 
-    Session(app)
+    db.init_app(app)
+    migrate = Migrate(app, db, directory='database/migrations')
+    with app.app_context():
+        upgrade()
 
+    Session(app)
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
     app.register_blueprint(app_blueprint)
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(dashboard_blueprint)
-
-    init_db()
     
     return app

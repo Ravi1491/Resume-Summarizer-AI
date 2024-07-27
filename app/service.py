@@ -1,7 +1,25 @@
 import sqlite3
 import os
 from flask import current_app, flash
-from .migrations import migration
+
+create_user_table = '''
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+  )
+'''
+
+create_resume_table = '''
+  CRAETE TABLE IF NOT EXISTS user_resumes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    filename TEXT NOT NULL,
+    original_text TEXT NULL,
+    ai_text TEXT NULL,
+  ) 
+'''
 
 def init_db():
     with sqlite3.connect('database.db') as conn:
@@ -13,7 +31,7 @@ def init_db():
                             ai_text TEXT NULL,
                             user_id INTEGER NOT NULL
                         )''')
-        cursor.execute(migration.create_user_table)
+        cursor.execute(create_user_table)
         conn.commit()
 
 def get_user_email(email):

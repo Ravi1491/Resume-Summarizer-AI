@@ -2,7 +2,7 @@ import bcrypt
 from flask import redirect, url_for, session
 from datetime import datetime, timedelta
 import jwt
-from ..models import get_user_email,create_user
+from ..service import get_user_email,create_user
 
 def login(email, password):
   user = get_user_email(email)
