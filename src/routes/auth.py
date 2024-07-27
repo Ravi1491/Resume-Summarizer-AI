@@ -1,6 +1,6 @@
 from flask import Blueprint
 from .index import token_required
-from ..controllers.auth_controller import AuthController
+from ..modules.auth.controllers.auth_controller import AuthController
 
 auth = Blueprint('auth', __name__)
 auth_controller = AuthController()

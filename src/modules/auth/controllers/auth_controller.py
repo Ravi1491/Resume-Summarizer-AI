@@ -1,7 +1,7 @@
 from flask import redirect, url_for, session, request,render_template
-from ..service.user_service import UserService
-from ..service.password_service import PasswordService
-from ..service.token_service import TokenService
+from ..services.user_service import UserService
+from ..services.password_service import PasswordService
+from ..services.token_service import TokenService
 
 class AuthController:
   def __init__(self):
