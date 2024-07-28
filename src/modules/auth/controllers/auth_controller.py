@@ -11,7 +11,7 @@ class AuthController:
     
   def login(self):
     if session.get('logged_in'):
-      return redirect(url_for('dashboard.home'))
+      return redirect(url_for('resume.home'))
     
     if request.method == 'POST':
       try:
@@ -31,7 +31,7 @@ class AuthController:
         token = self.token_service.generate_token(user)
         session['token'] = token
         
-        return redirect(url_for('dashboard.home'))
+        return redirect(url_for('resume.home'))
       except Exception as e:
         session['login_error'] = f"An error occurred: {str(e)}"
         return redirect(url_for('auth.login'))
@@ -41,7 +41,7 @@ class AuthController:
   
   def signup(self):
     if session.get('logged_in'):
-      return redirect(url_for('dashboard.home'))
+      return redirect(url_for('resume.home'))
     
     if request.method == 'POST':
       try:
@@ -60,7 +60,7 @@ class AuthController:
         token = self.token_service.generate_token(new_user)
         session['token'] = token
         
-        return redirect(url_for('dashboard.html'))
+        return redirect(url_for('resume.html'))
       
       except Exception as e:
         session['signup_error'] = f"An error occurred: {str(e)}"

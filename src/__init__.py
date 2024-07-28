@@ -7,7 +7,7 @@ from flask_migrate import Migrate, upgrade
 from database import db
 from .routes.index import app as app_blueprint
 from .routes.auth import auth as auth_blueprint
-from .routes.dashboard import dashboard as dashboard_blueprint
+from .routes.resume import resume as resume_blueprint
 import database.models  
 
 def create_app():
@@ -31,6 +31,6 @@ def create_app():
 
     app.register_blueprint(app_blueprint)
     app.register_blueprint(auth_blueprint)
-    app.register_blueprint(dashboard_blueprint)
+    app.register_blueprint(resume_blueprint)
     
     return app
