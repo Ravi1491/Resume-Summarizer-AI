@@ -6,10 +6,12 @@ class TokenService():
     self.secret_key = secret_key
     self.algorithm = algorithm
   
-  def generate_token(self, user):
+  
+  def generate_token(self, id, email):
+    print(id, email)
     return jwt.encode({
-      'id': user[0],
-      'email': user[2],
+      'id': id,
+      'email': email,
       'exp': datetime.utcnow() + timedelta(hours=24)
     }, self.secret_key, algorithm=self.algorithm)
     

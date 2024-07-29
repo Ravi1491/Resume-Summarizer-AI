@@ -19,16 +19,19 @@ class AuthController:
         password = request.form['password']
         
         user = self.user_service.get_user_by_email(email)
+
+        print(user)
         if not user:
           session['login_error'] = "User not found"
           return redirect(url_for('auth.login'))
         
-        if not self.password_service.check_password(password, user[3]):
+        if not self.password_service.check_password(password, user.password):
           session['login_error'] = "Invalid password"
           return redirect(url_for('auth.login'))
         
+        print(user)
         session['logged_in'] = True
-        token = self.token_service.generate_token(user)
+        token = self.token_service.generate_token(user.id, user.email)
         session['token'] = token
         
         return redirect(url_for('resume.home'))
@@ -53,11 +56,11 @@ class AuthController:
           session['signup_error'] = "User already exists"
           return redirect(url_for('auth.signup'))
         
-        hashed_password = self.password_service.hash_password(password)
+        hashed_password = self.password_service.hashed_password(password)
         new_user = self.user_service.create_user(name, email, hashed_password)
         
         session['logged_in'] = True
-        token = self.token_service.generate_token(new_user)
+        token = self.token_service.generate_token(new_user.id, new_user.email)
         session['token'] = token
         
         return redirect(url_for('resume.html'))

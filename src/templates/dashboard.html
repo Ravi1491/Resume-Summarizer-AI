@@ -314,15 +314,15 @@
             </tr>
           </thead>
           <tbody>
-            {% for pdf in uploaded_pdfs %}
+            {% for resume in uploaded_pdfs %}
             <tr>
-              <td class="truncate">{{ pdf[1] }}</td>
-              <td class="truncate">{{ pdf[2] }}</td>
-              <td class="truncate">{{ pdf[3] }}</td>
+              <td class="truncate">{{ resume.filename }}</td>
+              <td class="truncate">{{ resume.text }}</td>
+              <td class="truncate">{{ resume.ai_text }}</td>
               <td>
                 <div class="action-buttons">
                   <form
-                    action="/delete/{{pdf[0]}}"
+                    action="/delete/{{resume.id}}"
                     method="POST"
                     class="d-inline"
                   >
@@ -330,7 +330,11 @@
                       Delete
                     </button>
                   </form>
-                  <form action="/view/{{pdf[0]}}" method="GET" class="d-inline">
+                  <form
+                    action="/view/{{resume.id}}"
+                    method="GET"
+                    class="d-inline"
+                  >
                     <button type="submit" class="btn btn-primary btn-sm">
                       View
                     </button>

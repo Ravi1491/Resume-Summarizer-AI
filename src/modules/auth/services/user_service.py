@@ -1,15 +1,16 @@
-import sqlite3
+from database.models.user import User
+from database import db
 
 class UserService():
-  def get_user_by_email(self, email):
-    with sqlite3.connect('database.db') as conn:
-      cursor = conn.cursor()
-      cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-      return cursor.fetchone()
+  @staticmethod
+  def get_user_by_email(email) -> User:
+    user = User.query.filter(User.email == email).first()
+    return user
 
+  @staticmethod
   def create_user(name,email,password):
-    with sqlite3.connect('database.db') as conn:
-      cursor = conn.cursor()
-      cursor.execute('INSERT INTO users (name,email,password) VALUES (?,?,?)', (name,email,password,))
-      conn.commit()
-          
+    user = User(name,email,password)
+    db.session.add(user)
+    db.session.commit()
+    
+    return user

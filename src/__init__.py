@@ -8,7 +8,7 @@ from database import db
 from .routes.index import app as app_blueprint
 from .routes.auth import auth as auth_blueprint
 from .routes.resume import resume as resume_blueprint
-import database.models  
+import database.models
 
 def create_app():
     app = Flask(__name__)

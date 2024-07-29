@@ -13,7 +13,8 @@ class ResumeController():
   def home(self):
     user = session.get('user')
     all_user_resumes = self.resume_service.get_reusme_by_user_id(user_id=user['id'])
-    return render_template('dashboard.html', uploaded_pdfs = all_user_resumes)
+    all_user_resumes_dict = [resume.to_dict() for resume in all_user_resumes]
+    return render_template('dashboard.html', uploaded_pdfs = all_user_resumes_dict)
   
   def compare_resume_with_job(self):
     if request.method == 'POST' and 'job_description' in request.form:
@@ -23,10 +24,11 @@ class ResumeController():
 
       user = session.get('user')
       all_user_resumes = self.resume_service.get_reusme_by_user_id(user_id=user['id'])
-      final_res = []
+      all_user_resumes_dict = [resume.to_dict() for resume in all_user_resumes]
       
-      for resume in all_user_resumes:
-        prompt = match_job_description_prompt(file_name=resume[1],ai_text=resume[3], job_description=request.form['job_description'])
+      final_res = []
+      for resume in all_user_resumes_dict:
+        prompt = match_job_description_prompt(file_name=resume["filename"], ai_text=resume["ai_text"], job_description=request.form['job_description'])
         res = self.groq_service.get_response(prompt)
         sanitize_res = json.loads(res)
         final_res.append(sanitize_res)
@@ -44,7 +46,11 @@ class ResumeController():
     try:
       resume = self.resume_service.get_resume_by_id(id=id)
       if resume:
-        content = json.loads(resume[2])
+        resume = resume.to_dict()
+        resume_json = resume.get('ai_text')
+        
+        content = json.loads(resume_json)
+          
         html = genrate_html(content)
         return render_template('view.html', pdf=html)
       else:
