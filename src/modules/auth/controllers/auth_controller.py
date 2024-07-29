@@ -10,8 +10,14 @@ class AuthController:
     self.token_service = TokenService()
     
   def login(self):
-    if session.get('logged_in'):
-      return redirect(url_for('resume.home'))
+    if session.get('logged_in') and session.get('token'):
+      data = self.token_service.decode_token(session['token'])
+      user = self.user_service.get_user_by_email(data.get('email'))
+      if user:
+        return redirect(url_for('resume.home'))
+      else:
+        session.clear()
+        return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
       try:
@@ -20,18 +26,16 @@ class AuthController:
         
         user = self.user_service.get_user_by_email(email)
 
-        print(user)
         if not user:
           session['login_error'] = "User not found"
           return redirect(url_for('auth.login'))
         
-        if not self.password_service.check_password(password, user.password):
+        if not self.password_service.check_password(password, user.get('password')):
           session['login_error'] = "Invalid password"
           return redirect(url_for('auth.login'))
         
-        print(user)
         session['logged_in'] = True
-        token = self.token_service.generate_token(user.id, user.email)
+        token = self.token_service.generate_token(user.get(id), user.get(email))
         session['token'] = token
         
         return redirect(url_for('resume.home'))

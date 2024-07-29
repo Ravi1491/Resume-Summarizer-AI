@@ -13,7 +13,16 @@ class User(db.Model):
   
   def __repr__(self):
     return f'<User id={self.id}, name={self.name}, email={self.email}, password={self.password}>'
-
+  
+  def to_dict(self):
+    return {
+      'id': self.id,
+      'name': self.name,
+      'email': self.email,
+      'password': self.password,
+      'created_at': self.created_at,
+      'updated_at': self.updated_at
+    }
   
   def __init__(self, name, email, password) -> None:
     self.name = name
