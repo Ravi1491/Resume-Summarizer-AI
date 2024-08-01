@@ -3,7 +3,8 @@ from flask import session, render_template, current_app, request, json,redirect,
 from werkzeug.utils import secure_filename
 from ..services.resume_service import ResumeService
 from ..services.groq_service import GroqService
-from ..utils.prompt import genrate_html, match_job_description_prompt,parsed_resume_prompt
+from ..utils.prompt import match_job_description_prompt,parsed_resume_prompt
+from ..utils.helper import genrate_html
 
 class ResumeController():
   def __init__(self) -> None:

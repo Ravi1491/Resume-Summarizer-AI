@@ -8,16 +8,25 @@ class AuthController:
     self.user_service = UserService()
     self.password_service = PasswordService()
     self.token_service = TokenService()
-    
+
+  def validate_session(self):
+    token = session.get('token')
+    if token:
+      try:
+        data = self.token_service.decode_token(token)
+        user = self.user_service.get_user_by_email(data.get('email'))
+        if user:
+          return True
+      except Exception as e:
+        print("Token validation error: ", e)
+
+    session.clear()
+    return False
+
   def login(self):
     if session.get('logged_in') and session.get('token'):
-      data = self.token_service.decode_token(session['token'])
-      user = self.user_service.get_user_by_email(data.get('email'))
-      if user:
+      if self.validate_session():
         return redirect(url_for('resume.home'))
-      else:
-        session.clear()
-        return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
       try:
@@ -42,7 +51,7 @@ class AuthController:
       except Exception as e:
         session['login_error'] = f"An error occurred: {str(e)}"
         return redirect(url_for('auth.login'))
-        
+
     error = session.pop('login_error', None)
     return render_template('login.html', error=error)
   
