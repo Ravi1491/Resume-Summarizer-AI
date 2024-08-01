@@ -44,7 +44,7 @@ class AuthController:
           return redirect(url_for('auth.login'))
         
         session['logged_in'] = True
-        token = self.token_service.generate_token(user.get(id), user.get(email))
+        token = self.token_service.generate_token(user.get('id'), user.get('email'))
         session['token'] = token
         
         return redirect(url_for('resume.home'))
