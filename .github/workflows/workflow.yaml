@@ -19,7 +19,7 @@ jobs:
         run: docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
 
       - name: Build the Docker image
-        run: docker build --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} -t ${{secrets.DOCKERHUB_IMAGE}} .
+        run: docker build --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} -t ${{secrets.DOCKERHUB_IMAGE}} .
 
       - name: Push to Dockerhub
         run: docker push ${{secrets.DOCKERHUB_IMAGE}}:latest
