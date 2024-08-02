@@ -22,7 +22,9 @@ def create_app():
     print(f"SQLALCHEMY_DATABASE_URI: { app.config['SQLALCHEMY_DATABASE_URI']}")
 
     db.init_app(app)
+    print("Database initialized")
     migrate = Migrate(app, db, directory='database/migrations')
+    print("Migrate initialized")
     with app.app_context():
         upgrade()
 
