@@ -19,7 +19,15 @@ jobs:
         run: docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
 
       - name: Build the Docker image
-        run: docker build --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} -t ${{secrets.DOCKERHUB_IMAGE}} .
+        run: |
+          docker build \
+            --build-arg GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
+            --build-arg SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} \
+            -t ${{ secrets.DOCKERHUB_IMAGE }} .
+
+      - name: Debug
+        run: |
+          echo ${{ secrets.SQLALCHEMY_DATABASE_URI }}
 
       - name: Push to Dockerhub
         run: docker push ${{secrets.DOCKERHUB_IMAGE}}:latest
@@ -45,7 +53,7 @@ jobs:
         run: |
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY\":\"${{ secrets.GROQ_API_KEY }}\"}}}" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY\":\"${{ secrets.GROQ_API_KEY }}\",\"SQLALCHEMY_DATABASE_URI\":\"${{ secrets.SQLALCHEMY_DATABASE_URI }}\"}}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
   check-deployment:
