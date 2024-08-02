@@ -25,6 +25,10 @@ jobs:
             --build-arg SQLALCHEMY_DATABASE_URI=${{ secrets.SQLALCHEMY_DATABASE_URI }} \
             -t ${{ secrets.DOCKERHUB_IMAGE }} .
 
+      - name: Debug
+        run: |
+          echo ${{ secrets.SQLALCHEMY_DATABASE_URI }}
+
       - name: Push to Dockerhub
         run: docker push ${{secrets.DOCKERHUB_IMAGE}}:latest
 
