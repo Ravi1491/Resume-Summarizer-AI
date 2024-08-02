@@ -19,6 +19,7 @@ def create_app():
         app.config.from_object(ProductionConfig)
 
     app.secret_key = app.config['SECRET_KEY']
+    print(f"SQLALCHEMY_DATABASE_URI: { app.config['SQLALCHEMY_DATABASE_URI']}")
 
     db.init_app(app)
     migrate = Migrate(app, db, directory='database/migrations')
