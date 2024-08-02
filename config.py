@@ -6,6 +6,9 @@ load_dotenv()
 class Config:
   GROQ_API_KEY = os.getenv('GROQ_API_KEY')
   CONFIG_MODE = os.getenv('CONFIG_MODE')
+  SQLALCHEMY_DATABASE_URI= os.getenv('SQLALCHEMY_DATABASE_URI')
+  SQLALCHEMY_MIGRATE_REPO = os.path.join(os.path.dirname(__file__), 'database', 'migrations')
+  SQLALCHEMY_TRACK_MODIFICATIONS = False
   UPLOAD_FOLDER = 'uploads/'
   ALLOWED_EXTENSIONS = {'pdf'}
   SECRET_KEY = os.getenv('SECRET_KEY') or 'secret_key'
