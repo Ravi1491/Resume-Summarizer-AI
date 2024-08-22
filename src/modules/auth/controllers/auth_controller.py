@@ -76,7 +76,7 @@ class AuthController:
         token = self.token_service.generate_token(new_user.id, new_user.email)
         session['token'] = token
         
-        return redirect(url_for('resume.html'))
+        return redirect(url_for('resume.home'))
       
       except Exception as e:
         session['signup_error'] = f"An error occurred: {str(e)}"
