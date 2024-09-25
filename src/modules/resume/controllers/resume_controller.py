@@ -114,3 +114,55 @@ class ResumeController():
       current_app.logger.error(f"An error occurred during resume upload: {str(e)}")
       flash('An error occurred during file upload. Please try again.', 'error')
       return redirect(url_for('resume.home'))
+
+  def generate_resume(self):
+    if request.method == 'POST':
+      # Collect form data
+      personal_info = {
+        'name': request.form.get('name'),
+        'email': request.form.get('email'),
+        'phone': request.form.get('phone'),
+        'linkedin': request.form.get('linkedin'),
+        'github': request.form.get('github')
+      }
+      
+      # Handle multiple work experiences
+      work_experiences = []
+      work_exp_count = int(request.form.get('work_exp_count', 0))
+      for i in range(work_exp_count):
+        work_exp = {
+          'position': request.form.get(f'position_{i}'),
+          'company': request.form.get(f'company-name_{i}'),
+          'description': request.form.get(f'description_{i}', '').split('\n')
+        }
+        work_experiences.append(work_exp)
+      
+      # Handle multiple projects
+      projects = []
+      project_count = int(request.form.get('project_count', 0))
+      for i in range(project_count):
+        project = {
+          'name': request.form.get(f'project_name_{i}'),
+          'description': request.form.get(f'project_description_{i}', '').split('\n')
+        }
+        projects.append(project)
+      
+      skills = request.form.get('skills', '').split(',')
+      
+      education = {
+        'degree': request.form.get('degree'),
+        'institution': request.form.get('institution'),
+        'year': request.form.get('graduation-year'),
+        'gpa': request.form.get('gpa')
+      }
+      
+      data = {
+        'personal_info': personal_info,
+        'work_experiences': work_experiences,
+        'projects': projects,
+        'skills': skills,
+        'education': education
+      }
+    
+      return render_template('resume.html', data=data)
+    return render_template('resume.html', data={})

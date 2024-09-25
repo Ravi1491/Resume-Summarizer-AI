@@ -30,3 +30,7 @@ def delete_pdf(id):
 @token_required
 def upload_file():
   return resume_controller.upload_resume()
+
+@resume.route('/generate-resume', methods=['POST','GET'])
+def generate_resume():
+  return resume_controller.generate_resume()

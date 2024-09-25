@@ -32,6 +32,10 @@
     width: 50%;
     overflow-y: auto;
     padding-right: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
   }
 
   .resume-side {
@@ -157,6 +161,51 @@
       padding: 1.5rem;
     }
   }
+
+  #generateResume {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
+
+  #generateResume:hover {
+    background-color: #2980b9;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    resize: vertical;
+  }
+
+  .projects-container {
+    margin-bottom: 1rem;
+  }
+
+  .project-entry {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .add-project {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
 </style>
 <link
   href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
@@ -167,7 +216,7 @@
   <div class="input-side">
     <form
       id="resumeForm"
-      action="{{ url_for('dashboard.generate_resume') }}"
+      action="{{ url_for('resume.generate_resume') }}"
       method="POST"
     >
       <div>
@@ -223,85 +272,87 @@
       <div>
         <button type="button" class="collapsible">Work Experience</button>
         <div class="collapse-content">
-          <div class="input-group">
-            <label for="position">Position:</label>
-            <input
-              type="text"
-              id="position"
-              name="position"
-              placeholder="Enter your position"
-            />
+          <div class="work-experiences-container">
+            <div class="work-experience-entry">
+              <div class="input-group">
+                <label for="position_0">Position:</label>
+                <input
+                  type="text"
+                  id="position_0"
+                  name="position_0"
+                  placeholder="Enter your position"
+                />
+              </div>
+              <div class="input-group">
+                <label for="company-name_0">Company Name:</label>
+                <input
+                  type="text"
+                  id="company-name_0"
+                  name="company-name_0"
+                  placeholder="Enter your Company Name"
+                />
+              </div>
+              <div class="input-group">
+                <label for="description_0">Description:</label>
+                <textarea name="description_0" rows="10" cols="96"></textarea>
+              </div>
+            </div>
           </div>
-          <div class="input-group">
-            <label for="company">Company Name:</label>
-            <input
-              type="text"
-              id="company-name"
-              name="company-name"
-              placeholder="Enter your Comapny Name"
-            />
-          </div>
-          <div class="input-group">
-            <label for="description">Description:</label>
-            <textarea name="description" rows="10" cols="96"></textarea>
-          </div>
+          <button type="button" class="add-work-experience">
+            Add Another Work Experience
+          </button>
+          <input
+            type="hidden"
+            name="work_exp_count"
+            id="work_exp_count"
+            value="1"
+          />
         </div>
       </div>
       <div>
         <button type="button" class="collapsible">Projects</button>
         <div class="collapse-content">
-          <div class="input-group">
-            <label for="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Enter your name"
-            />
+          <div class="projects-container">
+            <div class="project-entry">
+              <div class="input-group">
+                <label for="project-name">Project Name:</label>
+                <input
+                  type="text"
+                  name="project-name[]"
+                  placeholder="Enter project name"
+                />
+              </div>
+              <div class="input-group">
+                <label for="project-url">Project URL:</label>
+                <input
+                  type="url"
+                  name="project-url[]"
+                  placeholder="Enter project URL"
+                />
+              </div>
+              <div class="input-group">
+                <label for="project-description">Description:</label>
+                <textarea
+                  name="project-description[]"
+                  rows="3"
+                  placeholder="Enter project description"
+                ></textarea>
+              </div>
+            </div>
           </div>
-          <div class="input-group">
-            <label for="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div class="input-group">
-            <label for="phone">Phone:</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              placeholder="Enter your phone number"
-            />
-          </div>
-          <div class="input-group">
-            <label for="linkedin">LinkedIn:</label>
-            <input
-              type="url"
-              id="linkedin"
-              name="linkedin"
-              placeholder="Enter your LinkedIn URL"
-            />
-          </div>
-          <div class="input-group">
-            <label for="github">GitHub:</label>
-            <input
-              type="url"
-              id="github"
-              name="github"
-              placeholder="Enter your GitHub URL"
-            />
-          </div>
+          <button type="button" class="add-project">Add Another Project</button>
         </div>
       </div>
       <div>
         <button type="button" class="collapsible">Skills</button>
         <div class="collapse-content">
           <div class="input-group">
-            <textarea name="skills" id="" cols="97" rows="10"></textarea>
+            <label for="skills">Skills (comma-separated):</label>
+            <textarea
+              name="skills"
+              rows="3"
+              placeholder="Enter your skills, separated by commas"
+            ></textarea>
           </div>
         </div>
       </div>
@@ -309,49 +360,28 @@
         <button type="button" class="collapsible">Education</button>
         <div class="collapse-content">
           <div class="input-group">
-            <label for="name">Name:</label>
+            <label for="degree">Degree:</label>
+            <input type="text" name="degree" placeholder="Enter your degree" />
+          </div>
+          <div class="input-group">
+            <label for="institution">Institution:</label>
             <input
               type="text"
-              id="name"
-              name="name"
-              placeholder="Enter your name"
+              name="institution"
+              placeholder="Enter your institution"
             />
           </div>
           <div class="input-group">
-            <label for="email">Email:</label>
+            <label for="graduation-year">Graduation Year:</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
+              type="text"
+              name="graduation-year"
+              placeholder="Enter your graduation year"
             />
           </div>
           <div class="input-group">
-            <label for="phone">Phone:</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              placeholder="Enter your phone number"
-            />
-          </div>
-          <div class="input-group">
-            <label for="linkedin">LinkedIn:</label>
-            <input
-              type="url"
-              id="linkedin"
-              name="linkedin"
-              placeholder="Enter your LinkedIn URL"
-            />
-          </div>
-          <div class="input-group">
-            <label for="github">GitHub:</label>
-            <input
-              type="url"
-              id="github"
-              name="github"
-              placeholder="Enter your GitHub URL"
-            />
+            <label for="gpa">GPA:</label>
+            <input type="text" name="gpa" placeholder="Enter your GPA" />
           </div>
         </div>
       </div>
@@ -366,7 +396,7 @@
     </div>
     <div class="content">
       <div class="ai-summarized">
-        <!-- <p>{{ pdf|safe }}</p> -->
+        {% if data %}
         <div
           style="
             font-family: Calibri, sans-serif;
@@ -377,13 +407,13 @@
         >
           <header style="text-align: center; margin-bottom: 20px">
             <h1 style="font-size: 24px; margin-bottom: 5px; margin: 0">
-              {{data['personnal_info']['name']}}
+              {{data['personal_info']['name']}}
             </h1>
             <div style="font-size: 14px">
-              <span>{{data['personnal_info']['email']}}</span> •
-              <span>{{data['personnal_info']['phone']}}</span> •
-              <span>{{data['personnal_info']['linkedin']}}</span> •
-              <span>{{data['personnal_info']['github']}}</span>
+              <span>{{data['personal_info']['email']}}</span> •
+              <span>{{data['personal_info']['phone']}}</span> •
+              <span>{{data['personal_info']['linkedin']}}</span> •
+              <span>{{data['personal_info']['github']}}</span>
             </div>
           </header>
 
@@ -398,6 +428,7 @@
             >
               EXPERIENCE
             </h2>
+            {% for experience in data['work_experiences'] %}
             <div style="margin-bottom: 10px">
               <div
                 style="
@@ -407,41 +438,17 @@
                 "
               >
                 <h2 style="font-size: 16px; margin: 0">
-                  {{data['work_experience']['position']}}
+                  {{experience['position']}}
                 </h2>
-                <span style="font-style: italic">January 2023 - Present</span>
               </div>
-              <div style="font-weight: bold">
-                {{data['work_experience']['company']}}
-              </div>
+              <div style="font-weight: bold">{{experience['company']}}</div>
               <ul style="margin: 5px 0; padding-left: 20px">
-                {% for description in data['work_experience']['description'] %}
+                {% for description in experience['description'] %}
                 <li>{{ description }}</li>
                 {% endfor %}
               </ul>
             </div>
-            <div style="margin-bottom: 10px">
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: baseline;
-                "
-              >
-                <h2 style="font-size: 16px; margin: 0">
-                  {{data['work_experience']['position']}}
-                </h2>
-                <span style="font-style: italic">January 2023 - Present</span>
-              </div>
-              <div style="font-weight: bold">
-                {{data['work_experience']['company']}}
-              </div>
-              <ul style="margin: 5px 0; padding-left: 20px">
-                {% for description in data['work_experience']['description'] %}
-                <li>{{ description }}</li>
-                {% endfor %}
-              </ul>
-            </div>
+            {% endfor %}
           </div>
 
           <div style="margin-bottom: 15px">
@@ -455,47 +462,16 @@
             >
               PROJECTS
             </h1>
+            {% for project in data['projects'] %}
             <div style="margin-bottom: 10px">
-              <h2 style="font-size: 16px; margin: 0">
-                Vexio (Shopify Product Review Management)
-              </h2>
-              <div>github.com/Ravi1491/Vexio</div>
+              <h2 style="font-size: 16px; margin: 0">{{ project['name'] }}</h2>
               <ul style="margin: 5px 0; padding-left: 20px">
-                <li>
-                  Vexio is a powerful Shopify App designed to simplify and
-                  enhance your product review management process. With it, you
-                  can effortlessly collect and manage customer reviews for your
-                  Shopify store products.
-                </li>
-                <li>
-                  Engineered a robust automation system using NodeJs, Sequelize,
-                  PostgreSQL, and webhooks within Vexio, automatically
-                  dispatching review emails to customers post-purchase,
-                  fostering engagement and insights
-                </li>
+                {% for description in project['description'] %}
+                <li>{{ description }}</li>
+                {% endfor %}
               </ul>
             </div>
-            <div style="margin-bottom: 10px">
-              <h2 style="font-size: 16px; margin: 0">Resume Summarizer AI</h2>
-              <div>github.com/Ravi1491/Resume-Summarizer-AI</div>
-              <ul style="margin: 5px 0; padding-left: 20px">
-                <li>
-                  Leveraging the AI capabilities of the Groq service, the
-                  application generates concise and relevant summaries of the
-                  extracted resume text.
-                </li>
-                <li>
-                  Users can easily upload their PDF resumes. The application
-                  employs the pdfminer3 library to accurately extract text from
-                  these PDFs and are stored in an SQLite database.
-                </li>
-                <li>
-                  Users can compare their resumes with job descriptions to
-                  identify key matches and gaps, helping them tailor their
-                  applications effectively.
-                </li>
-              </ul>
-            </div>
+            {% endfor %}
           </div>
 
           <div style="margin-bottom: 15px">
@@ -509,7 +485,7 @@
             >
               SKILLS
             </h2>
-            <p style="margin: 5px 0">{{ data["skills"] }}</p>
+            <p style="margin: 5px 0">{{ data["skills"]|join(', ') }}</p>
           </div>
 
           <div style="margin-bottom: 15px">
@@ -524,11 +500,18 @@
               EDUCATION
             </h2>
             <p style="font-size: 16px; margin: 0">
-              Bachelor of Technology in Computer Science <br />Bennett
-              University • Greater Noida • 2023 • 8.94
+              {{data['education']['degree']}} <br />
+              {{data['education']['institution']}} •
+              {{data['education']['year']}} • {{data['education']['gpa']}}
             </p>
           </div>
         </div>
+        {% else %}
+        <p>
+          No resume data available. Please fill out the form and generate a
+          resume.
+        </p>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -549,5 +532,41 @@
       }
     });
   }
+
+  document.querySelector(".add-project").addEventListener("click", function () {
+    const projectsContainer = document.querySelector(".projects-container");
+    const newProject = document.querySelector(".project-entry").cloneNode(true);
+
+    // Clear the input values in the cloned project
+    newProject
+      .querySelectorAll("input, textarea")
+      .forEach((input) => (input.value = ""));
+
+    projectsContainer.appendChild(newProject);
+  });
+
+  document
+    .querySelector(".add-work-experience")
+    .addEventListener("click", function () {
+      const workExperiencesContainer = document.querySelector(
+        ".work-experiences-container"
+      );
+      const newWorkExperience = document
+        .querySelector(".work-experience-entry")
+        .cloneNode(true);
+
+      // Clear the input values in the cloned work experience
+      newWorkExperience
+        .querySelectorAll("input, textarea")
+        .forEach((input) => (input.value = ""));
+
+      workExperiencesContainer.appendChild(newWorkExperience);
+
+      // Update the work experience count
+      const workExpCountInput = document.getElementById("work_exp_count");
+      const currentCount = parseInt(workExpCountInput.value);
+      workExpCountInput.value = currentCount + 1;
+    });
 </script>
+
 {% endblock %}
