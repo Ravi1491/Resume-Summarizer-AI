@@ -9,7 +9,7 @@ from .routes.index import app as app_blueprint
 from .routes.auth import auth as auth_blueprint
 from .routes.resume import resume as resume_blueprint
 import database.models
-import src.services.aws
+import src.services
 
 def create_app():
     app = Flask(__name__)
