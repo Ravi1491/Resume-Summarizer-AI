@@ -1,8 +1,8 @@
 """create_user_and_resumes
 
-Revision ID: 1b70c44b1dba
+Revision ID: 7e61bf3a94b4
 Revises: 
-Create Date: 2024-09-25 12:26:38.296760
+Create Date: 2024-09-25 12:40:08.776719
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1b70c44b1dba'
+revision = '7e61bf3a94b4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,6 +30,7 @@ def upgrade():
     )
     op.create_table('resumes',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('filename', sa.String(length=200), nullable=False),
     sa.Column('file_key', sa.String(), nullable=False),
     sa.Column('text', sa.Text(), nullable=False),
     sa.Column('ai_text', sa.Text(), nullable=False),

@@ -30,8 +30,6 @@ def create_app():
         upgrade()
 
     Session(app)
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
 
     app.register_blueprint(app_blueprint)
     app.register_blueprint(auth_blueprint)

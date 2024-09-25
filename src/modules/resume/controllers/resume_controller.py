@@ -95,13 +95,13 @@ class ResumeController():
           try:
             # Use the pre-signed URL to extract text from the PDF
             text = self.resume_service.get_resume_pdf_text(file_url=presigned_url)
-            current_app.logger.info(f"Text extracted from PDF: {text}")
+            current_app.logger.info(f"Text extracted from PDF: {filename}")
             
             prompt = parsed_resume_prompt(text)
             combined_prompt = f"{prompt}\n\n{text}" if text else prompt
             generated_text = self.groq_service.get_response(prompt=combined_prompt)
 
-            self.resume_service.create_resume(filename=key, ai_text=generated_text, text=text, user_id=user['id'])
+            self.resume_service.create_resume(filename=filename, file_key=key, ai_text=generated_text, text=text, user_id=user['id'])
             current_app.logger.info(f"Resume processed and saved: {filename}")
           except Exception as pdf_error:
             current_app.logger.error(f"Error processing PDF {filename}: {str(pdf_error)}")

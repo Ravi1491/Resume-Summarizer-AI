@@ -12,8 +12,8 @@ from flask import current_app
 
 class ResumeService():
   @staticmethod
-  def create_resume(filename, text, ai_text, user_id):
-    resume = Resume(filename, text, ai_text, user_id)
+  def create_resume(filename, file_key, text, ai_text, user_id):
+    resume = Resume(filename, file_key, text, ai_text, user_id)
     db.session.add(resume)
     db.session.commit()
 
@@ -28,7 +28,6 @@ class ResumeService():
     if resume:
       db.session.delete(resume)
       db.session.commit()
-      os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], resume.filename))
 
   def filter_file_by_extension(self,filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
