@@ -9,6 +9,7 @@ from .routes.index import app as app_blueprint
 from .routes.auth import auth as auth_blueprint
 from .routes.resume import resume as resume_blueprint
 import database.models
+import src.services.aws
 
 def create_app():
     app = Flask(__name__)
@@ -29,8 +30,6 @@ def create_app():
         upgrade()
 
     Session(app)
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
 
     app.register_blueprint(app_blueprint)
     app.register_blueprint(auth_blueprint)

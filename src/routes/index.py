@@ -1,7 +1,8 @@
 import jwt
 from functools import wraps
 
-from flask import Blueprint, request, render_template, session, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for
+from ..modules.auth.services.user_service import UserService
 
 app = Blueprint('app', __name__)
 
@@ -13,6 +14,9 @@ def token_required(fun):
       return redirect(url_for('auth.login'))
     try:
       payload = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
+      user = UserService.get_user_by_email(payload.get('email'))
+      if not user:
+        return redirect(url_for('auth.login'))
       session['user'] = payload
     except jwt.ExpiredSignatureError:
         session.clear()
