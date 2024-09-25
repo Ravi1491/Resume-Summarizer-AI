@@ -1,10 +1,14 @@
 import os
+import boto3
 from flask import session, render_template, current_app, request, json,redirect,url_for, flash
 from werkzeug.utils import secure_filename
 from ..services.resume_service import ResumeService
 from ..services.groq_service import GroqService
 from ..utils.prompt import match_job_description_prompt,parsed_resume_prompt
 from ..utils.helper import genrate_html
+from src.services.aws import AwsService
+
+s3 = boto3.client('s3')
 
 class ResumeController():
   def __init__(self) -> None:
@@ -73,26 +77,41 @@ class ResumeController():
       user = session.get('user')
 
       if 'pdfs' not in request.files:
+        flash('No file part', 'error')
         return redirect(request.url)
 
       files = request.files.getlist('pdfs')
       for file in files:
         if file and self.resume_service.filter_file_by_extension(filename=file.filename):
           filename = secure_filename(file.filename)
-          file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+          self.aws_service = AwsService()
+          
+          # Upload file to S3 and get the pre-signed URL
+          key = self.aws_service.upload_file(file=file)
+          presigned_url = self.aws_service.get_file(key)
+          
+          current_app.logger.info(f"File uploaded to S3: {filename}")
 
-          text = self.resume_service.get_resume_pdf_text(file=f'uploads/{filename}')
-          prompt = parsed_resume_prompt(text)
+          try:
+            # Use the pre-signed URL to extract text from the PDF
+            text = self.resume_service.get_resume_pdf_text(file_url=presigned_url)
+            current_app.logger.info(f"Text extracted from PDF: {text}")
+            
+            prompt = parsed_resume_prompt(text)
+            combined_prompt = f"{prompt}\n\n{text}" if text else prompt
+            generated_text = self.groq_service.get_response(prompt=combined_prompt)
 
-          combined_prompt = f"{prompt}\n\n{text}" if text else prompt
-          generated_text = self.groq_service.get_response(prompt=combined_prompt)
-
-          self.resume_service.create_resume(filename=filename,ai_text=generated_text,text=text,user_id=user['id'])
+            self.resume_service.create_resume(filename=key, ai_text=generated_text, text=text, user_id=user['id'])
+            current_app.logger.info(f"Resume processed and saved: {filename}")
+          except Exception as pdf_error:
+            current_app.logger.error(f"Error processing PDF {filename}: {str(pdf_error)}")
+            flash(f'Error processing {filename}. Please ensure it is a valid PDF.', 'error')
         else:
-          print(f'File {file.filename} is not a valid PDF')
-      
+          current_app.logger.warning(f'File {file.filename} is not a valid PDF')
+          flash(f'File {file.filename} is not a valid PDF', 'warning')
+
       return redirect(url_for('resume.home'))
     except Exception as e:
-      print(f"An error occurred: {str(e)}")
-      return render_template(('dashboard.html'))
-      
+      current_app.logger.error(f"An error occurred during resume upload: {str(e)}")
+      flash('An error occurred during file upload. Please try again.', 'error')
+      return redirect(url_for('resume.home'))
