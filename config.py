@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-  GROQ_API_KEY = os.getenv('GROQ_API_KEY')
   CONFIG_MODE = os.getenv('CONFIG_MODE')
   SQLALCHEMY_DATABASE_URI= os.getenv('SQLALCHEMY_DATABASE_URI')
   SQLALCHEMY_MIGRATE_REPO = os.path.join(os.path.dirname(__file__), 'database', 'migrations')
@@ -20,10 +19,12 @@ class Config:
   AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
   AWS_REGION = os.getenv('AWS_REGION')
   AWS_BUCKET_NAME = os.getenv('AWS_BUCKET_NAME')
-  LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
   LANGCHAIN_PROJECT = os.getenv("LANGCHAIN_PROJECT")
+  LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
+  LANGCHAIN_ENDPOINT = os.getenv("LANGCHAIN_ENDPOINT")
   LANGCHAIN_TRACING_V2 = "true"
-
+  GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+  ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 class DevelopmentConfig(Config):
   DEBUG = True

@@ -6,13 +6,13 @@ from ..services.resume_service import ResumeService
 from ..utils.prompt import match_job_description_prompt,parsed_resume_prompt
 from ..utils.helper import genrate_html
 from src.services.aws import AwsService
-from src.services.groq import GroqService
+from src.services.llm import LLMService
 s3 = boto3.client('s3')
 
 class ResumeController():
   def __init__(self) -> None:
     self.resume_service = ResumeService()
-    self.groq_service = GroqService()
+    self.llm_service = LLMService()
   
   def home(self):
     user = session.get('user')
@@ -33,7 +33,7 @@ class ResumeController():
       final_res = []
       for resume in all_user_resumes_dict:
         prompt = match_job_description_prompt(file_name=resume["filename"], ai_text=resume["ai_text"], job_description=request.form['job_description'])
-        res = self.groq_service.get_response(prompt)
+        res = self.llm_service.get_groq_response(prompt)
         sanitize_res = json.loads(res)
         final_res.append(sanitize_res)
         
@@ -98,7 +98,7 @@ class ResumeController():
             
             prompt = parsed_resume_prompt(text)
             combined_prompt = f"{prompt}\n\n{text}" if text else prompt
-            generated_text = self.groq_service.get_response(prompt=combined_prompt)
+            generated_text = self.llm_service.get_groq_response(prompt=combined_prompt)
 
             self.resume_service.create_resume(filename=filename, file_key=key, ai_text=generated_text, text=text, user_id=user['id'])
             current_app.logger.info(f"Resume processed and saved: {filename}")
