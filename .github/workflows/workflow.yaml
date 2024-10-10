@@ -55,6 +55,9 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Deploy to Lightsail
         env:
           SERVICE_NAME: ${{ secrets.LIGHTSAIL_SERVICE_NAME }}
@@ -63,9 +66,15 @@ jobs:
           CONTAINER_PORT: 5000
         run: |
           ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }} | to_entries | map(.key + \"=\" + .value) | join(\",\")" .github/env.yaml)
+          CONTAINERS_JSON=$(jq -n \
+            --arg cn "$CONTAINER_NAME" \
+            --arg img "$IMAGE_NAME" \
+            --arg env "$ENV_VARS" \
+            '{($cn): {image: $img, ports: {"5000": "HTTP"}, environment: ($env | split(",") | map(split("=") | {key: .[0], value: .[1]}) )}}')
+
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":[$(echo $ENV_VARS | sed 's/,/","/g' | sed 's/=/":"/g')]}}" \
+            --containers "$CONTAINERS_JSON" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
   check-deployment:
