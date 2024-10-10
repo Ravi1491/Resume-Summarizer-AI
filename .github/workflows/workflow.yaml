@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "beta"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "beta"]
 
 jobs:
   build-and-deploy:
@@ -12,6 +12,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set environment
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          elif [[ ${{ github.ref }} == 'refs/heads/beta' ]]; then
+            echo "ENVIRONMENT=beta" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          fi
+
       - name: Login Dockerhub
         env:
           DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
@@ -20,10 +31,10 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_IMAGE }} .
+          docker build -t ${{ secrets.DOCKERHUB_IMAGE }}:${{ env.ENVIRONMENT }} .
 
       - name: Push to Dockerhub
-        run: docker push ${{secrets.DOCKERHUB_IMAGE}}:latest
+        run: docker push ${{secrets.DOCKERHUB_IMAGE}}:${{ env.ENVIRONMENT }}
 
       - name: Install AWS CLI
         run: |
@@ -33,21 +44,26 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION}}
+          aws-access-key-id: ${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', env.ENVIRONMENT)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_AWS_SECRET_ACCESS_KEY', env.ENVIRONMENT)] }}
+          aws-region: ${{ secrets[format('{0}_AWS_REGION', env.ENVIRONMENT)] }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
 
       - name: Deploy to Lightsail
         env:
-          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME}}
-          CONTAINER_NAME: ${{secrets.CONTAINER_NAME}}
-          IMAGE_NAME: ${{secrets.DOCKERHUB_IMAGE}}
+          SERVICE_NAME: ${{ secrets[format('{0}_LIGHTSAIL_SERVICE_NAME', env.ENVIRONMENT)] }}
+          CONTAINER_NAME: ${{ secrets[format('{0}_CONTAINER_NAME', env.ENVIRONMENT)] }}
+          IMAGE_NAME: ${{secrets.DOCKERHUB_IMAGE}}:${{ env.ENVIRONMENT }}
           CONTAINER_PORT: 5000
         run: |
-          ENV_VARS=$(yq eval '.env | to_entries | map(.key + "=\"" + .value + "\"") | join(",")' .github/env.yaml)
+          ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }} | to_entries | map(.key + \"=\\\"\" + .value + \"\\\"\") | join(\",\")" .github/env.yaml)
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{$ENV_VARS}}}" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{$ENV_VARS}}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
   check-deployment:
@@ -55,6 +71,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set environment
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          elif [[ ${{ github.ref }} == 'refs/heads/beta' ]]; then
+            echo "ENVIRONMENT=beta" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+          fi
+
       - name: Install AWS CLI
         run: |
           sudo apt-get update
@@ -63,13 +89,13 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION}}
+          aws-access-key-id: ${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', env.ENVIRONMENT)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_AWS_SECRET_ACCESS_KEY', env.ENVIRONMENT)] }}
+          aws-region: ${{ secrets[format('{0}_AWS_REGION', env.ENVIRONMENT)] }}
 
       - name: Check Deployment Status
         env:
-          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME}}
+          SERVICE_NAME: ${{ secrets[format('{0}_LIGHTSAIL_SERVICE_NAME', env.ENVIRONMENT)] }}
         run: |
           echo "Checking deployment status..."
           while true; do
