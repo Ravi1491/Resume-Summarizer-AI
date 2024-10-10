@@ -65,12 +65,12 @@ jobs:
           IMAGE_NAME: ${{secrets.DOCKERHUB_IMAGE}}:${{ env.ENVIRONMENT }}
           CONTAINER_PORT: 5000
         run: |
-          ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }} | to_entries | map(.key + \"=\" + .value) | join(\",\")" .github/env.yaml)
+          ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }}" .github/env.yaml)
           CONTAINERS_JSON=$(jq -n \
             --arg cn "$CONTAINER_NAME" \
             --arg img "$IMAGE_NAME" \
-            --arg env "$ENV_VARS" \
-            '{($cn): {image: $img, ports: {"5000": "HTTP"}, environment: ($env | split(",") | map(split("=") | {key: .[0], value: .[1]}) )}}')
+            --argjson env "$ENV_VARS" \
+            '{($cn): {image: $img, ports: {"5000": "HTTP"}, environment: $env}}')
 
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
