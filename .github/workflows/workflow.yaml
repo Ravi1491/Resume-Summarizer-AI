@@ -41,6 +41,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y awscli
 
+      - name: Set AWS credentials as environment variables
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', env.ENVIRONMENT)] }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_AWS_SECRET_ACCESS_KEY', env.ENVIRONMENT)] }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets[format('{0}_AWS_REGION', env.ENVIRONMENT)] }}" >> $GITHUB_ENV
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
