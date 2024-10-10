@@ -62,10 +62,10 @@ jobs:
           IMAGE_NAME: ${{secrets.DOCKERHUB_IMAGE}}:${{ env.ENVIRONMENT }}
           CONTAINER_PORT: 5000
         run: |
-          ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }} | to_entries | map(.key + \"=\\\"\" + .value + \"\\\"\") | join(\",\")" .github/env.yaml)
+          ENV_VARS=$(yq eval ".${{ env.ENVIRONMENT }} | to_entries | map(.key + \"=\" + .value) | join(\",\")" .github/env.yaml)
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{$ENV_VARS}}}" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":[$(echo $ENV_VARS | sed 's/,/","/g' | sed 's/=/":"/g')]}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
   check-deployment:
