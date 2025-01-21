@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  resume-app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: asawari27/resume-v1-prod:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - GROQ_API_KEY_V1=${GROQ_API_KEY_V1}
+      - GROQ_API_KEY_V2=${GROQ_API_KEY_V2}
+      - SQLALCHEMY_DATABASE_URI=${SQLALCHEMY_DATABASE_URI_PROD}
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_PASSWORD=${GMAIL_PASSWORD}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT_SSL=${SMTP_PORT_SSL}
+    restart: always
+
