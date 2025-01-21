@@ -58,8 +58,21 @@ jobs:
         run: |
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY_V1\":\"${{ secrets.GROQ_API_KEY_V1 }}\",\"GROQ_API_KEY_V2\":\"${{ secrets.GROQ_API_KEY_V2 }}\",\"SQLALCHEMY_DATABASE_URI\":\"${{ secrets.SQLALCHEMY_DATABASE_URI_QA }}\",\"GMAIL_USER\":\"${{ secrets.GMAIL_USER }}\",\"GMAIL_PASSWORD\":\"${{ secrets.GMAIL_PASSWORD }}\",\"SMTP_SERVER\":\"${{ secrets.SMTP_SERVER }}\",\"SMTP_PORT_SSL\":\"${{ secrets.SMTP_PORT_SSL }}\"}}}" \
-            --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"/\",\"successCodes\":\"200-499\"}}"
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{
+              \"CONFIG_MODE\":\"${{ env.ENV_CONFIG_MODE }}\",
+              \"SQLALCHEMY_DATABASE_URI\":\"${{ env.ENV_SQLALCHEMY_DATABASE_URI }}\",
+              \"AWS_ACCESS_KEY_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID }}\",
+              \"AWS_SECRET_ACCESS_KEY\":\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\",
+              \"AWS_REGION\":\"${{ secrets.AWS_REGION }}\",
+              \"AWS_BUCKET_NAME\":\"${{ env.ENV_AWS_BUCKET_NAME }}\",
+              \"LANGCHAIN_PROJECT\":\"${{ env.ENV_LANGCHAIN_PROJECT }}\",
+              \"LANGCHAIN_API_KEY\":\"${{ env.ENV_LANGCHAIN_API_KEY }}\",
+              \"LANGCHAIN_ENDPOINT\":\"${{ env.ENV_LANGCHAIN_ENDPOINT }}\",
+              \"LANGCHAIN_TRACING_V2\":\"${{ env.ENV_LANGCHAIN_TRACING_V2 }}\",
+              \"GROQ_API_KEY\":\"${{ env.ENV_GROQ_API_KEY }}\",
+              \"ANTHROPIC_API_KEY\":\"${{ env.ENV_ANTHROPIC_API_KEY }}\"
+            }}}" \
+            --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
       - name: Check QA Deployment Status
         env:
@@ -76,6 +89,81 @@ jobs:
               break
             elif [ "$DEPLOYMENT_STATE" = "FAILED" ] || [ "$CONTAINER_STATE" = "FAILED" ]; then
               echo "QA Deployment failed. Check Lightsail logs for more information."
+              exit 1
+            fi
+            echo "Waiting for deployment to complete..."
+            sleep 30
+          done
+          
+  deploy_production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login Dockerhub
+        env:
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
+        run: docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+
+      - name: Build the Docker image
+        run: |
+          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/resume-be-prod .
+
+      - name: Push to Dockerhub
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/resume-be-prod:latest
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+          verbose: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod a+x /usr/local/bin/yq
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Deploy to Lightsail Production
+        env:
+          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_PROD}}
+          CONTAINER_NAME: ${{secrets.CONTAINER_NAME_PROD}}
+          IMAGE_NAME: ${{secrets.DOCKERHUB_USERNAME}}/resume-be-prod
+          CONTAINER_PORT: 5000
+        run: |
+          aws lightsail create-container-service-deployment \
+            --service-name $SERVICE_NAME \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY_V1\":\"${{ secrets.GROQ_API_KEY_V1 }}\",\"GROQ_API_KEY_V2\":\"${{ secrets.GROQ_API_KEY_V2 }}\",\"SQLALCHEMY_DATABASE_URI\":\"${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}\",\"GMAIL_USER\":\"${{ secrets.GMAIL_USER }}\",\"GMAIL_PASSWORD\":\"${{ secrets.GMAIL_PASSWORD }}\",\"SMTP_SERVER\":\"${{ secrets.SMTP_SERVER }}\",\"SMTP_PORT_SSL\":\"${{ secrets.SMTP_PORT_SSL }}\"}}}" \
+            --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"/\",\"successCodes\":\"200-499\"}}"
+
+      - name: Check Production Deployment Status
+        env:
+          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_PROD}}
+        run: |
+          echo "Checking deployment status..."
+          while true; do
+            DEPLOYMENT_STATE=$(aws lightsail get-container-services --service-name $SERVICE_NAME --query 'containerServices[0].currentDeployment.state' --output text)
+            CONTAINER_STATE=$(aws lightsail get-container-services --service-name $SERVICE_NAME --query 'containerServices[0].state' --output text)
+            echo "Current deployment state: $DEPLOYMENT_STATE"
+            echo "Current container service state: $CONTAINER_STATE"
+            if [ "$DEPLOYMENT_STATE" = "ACTIVE" ] && [ "$CONTAINER_STATE" = "RUNNING" ]; then
+              echo "Production Deployment successful and service is running!"
+              break
+            elif [ "$DEPLOYMENT_STATE" = "FAILED" ] || [ "$CONTAINER_STATE" = "FAILED" ]; then
+              echo "Production Deployment failed. Check Lightsail logs for more information."
               exit 1
             fi
             echo "Waiting for deployment to complete..."
