@@ -59,18 +59,18 @@ jobs:
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
             --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{
-              \"CONFIG_MODE\":\"${{ env.ENV_CONFIG_MODE }}\",
-              \"SQLALCHEMY_DATABASE_URI\":\"${{ env.ENV_SQLALCHEMY_DATABASE_URI }}\",
+              \"CONFIG_MODE\":\"${{ env.CONFIG_MODE }}\",
+              \"SQLALCHEMY_DATABASE_URI\":\"${{ env.SQLALCHEMY_DATABASE_URI }}\",
               \"AWS_ACCESS_KEY_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID }}\",
               \"AWS_SECRET_ACCESS_KEY\":\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\",
               \"AWS_REGION\":\"${{ secrets.AWS_REGION }}\",
-              \"AWS_BUCKET_NAME\":\"${{ env.ENV_AWS_BUCKET_NAME }}\",
-              \"LANGCHAIN_PROJECT\":\"${{ env.ENV_LANGCHAIN_PROJECT }}\",
-              \"LANGCHAIN_API_KEY\":\"${{ env.ENV_LANGCHAIN_API_KEY }}\",
-              \"LANGCHAIN_ENDPOINT\":\"${{ env.ENV_LANGCHAIN_ENDPOINT }}\",
-              \"LANGCHAIN_TRACING_V2\":\"${{ env.ENV_LANGCHAIN_TRACING_V2 }}\",
-              \"GROQ_API_KEY\":\"${{ env.ENV_GROQ_API_KEY }}\",
-              \"ANTHROPIC_API_KEY\":\"${{ env.ENV_ANTHROPIC_API_KEY }}\"
+              \"AWS_BUCKET_NAME\":\"${{ env.AWS_BUCKET_NAME }}\",
+              \"LANGCHAIN_PROJECT\":\"${{ env.LANGCHAIN_PROJECT }}\",
+              \"LANGCHAIN_API_KEY\":\"${{ env.LANGCHAIN_API_KEY }}\",
+              \"LANGCHAIN_ENDPOINT\":\"${{ env.LANGCHAIN_ENDPOINT }}\",
+              \"LANGCHAIN_TRACING_V2\":\"${{ env.LANGCHAIN_TRACING_V2 }}\",
+              \"GROQ_API_KEY\":\"${{ env.GROQ_API_KEY }}\",
+              \"ANTHROPIC_API_KEY\":\"${{ env.ANTHROPIC_API_KEY }}\"
             }}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
