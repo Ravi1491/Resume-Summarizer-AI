@@ -57,46 +57,41 @@ jobs:
       - name: Load environment variables
         id: load-env
         run: |
-          echo "Loading environment variables from env.yaml"
-          TEMP_ENV_FILE=$(mktemp)
-          
-          # Read env.yaml and replace GitHub Actions secret placeholders
           if [ "${{ github.event.inputs.environment }}" = "beta" ]; then
-            ENV_SECTION="beta"
+            echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+            echo '{
+              "CONFIG_MODE": "${{ secrets.BETA_CONFIG_MODE }}",
+              "SQLALCHEMY_DATABASE_URI": "${{ secrets.BETA_SQLALCHEMY_DATABASE_URI }}",
+              "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+              "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+              "AWS_REGION": "${{ secrets.AWS_REGION }}",
+              "AWS_BUCKET_NAME": "${{ secrets.BETA_AWS_BUCKET_NAME }}",
+              "LANGCHAIN_PROJECT": "${{ secrets.BETA_LANGCHAIN_PROJECT }}",
+              "LANGCHAIN_API_KEY": "${{ secrets.BETA_LANGCHAIN_API_KEY }}",
+              "LANGCHAIN_ENDPOINT": "${{ secrets.BETA_LANGCHAIN_ENDPOINT }}",
+              "LANGCHAIN_TRACING_V2": "true",
+              "GROQ_API_KEY": "${{ secrets.BETA_GROQ_API_KEY }}",
+              "ANTHROPIC_API_KEY": "${{ secrets.BETA_ANTHROPIC_API_KEY }}"
+            }' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
-            ENV_SECTION="production"
+            echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+            echo '{
+              "CONFIG_MODE": "${{ secrets.PROD_CONFIG_MODE }}",
+              "SQLALCHEMY_DATABASE_URI": "${{ secrets.PROD_SQLALCHEMY_DATABASE_URI }}",
+              "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+              "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+              "AWS_REGION": "${{ secrets.AWS_REGION }}",
+              "AWS_BUCKET_NAME": "${{ secrets.PROD_AWS_BUCKET_NAME }}",
+              "LANGCHAIN_PROJECT": "${{ secrets.PROD_LANGCHAIN_PROJECT }}",
+              "LANGCHAIN_API_KEY": "${{ secrets.PROD_LANGCHAIN_API_KEY }}",
+              "LANGCHAIN_ENDPOINT": "${{ secrets.PROD_LANGCHAIN_ENDPOINT }}",
+              "LANGCHAIN_TRACING_V2": "true",
+              "GROQ_API_KEY": "${{ secrets.PROD_GROQ_API_KEY }}",
+              "ANTHROPIC_API_KEY": "${{ secrets.PROD_ANTHROPIC_API_KEY }}"
+            }' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
-          
-          # Process each environment variable and replace secrets
-          yq eval ".$ENV_SECTION" .github/env.yaml | while IFS=": " read -r key value; do
-            # Remove leading spaces and quotes
-            key=$(echo "$key" | xargs)
-            value=$(echo "$value" | xargs)
-            
-            # If value contains secrets reference, evaluate it
-            if [[ $value == *'\${{ secrets.'* ]]; then
-              # Extract secret name without the GitHub Actions syntax
-              secret_name=$(echo "$value" | sed -E 's/.*secrets\.([A-Z_]+).*/\1/')
-              # Use the actual secret value from GitHub environment
-              echo "\"$key\": \"${{ secrets[format('{0}', secret_name)] }}\"" >> "$TEMP_ENV_FILE"
-            else
-              echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
-            fi
-          done
-          
-          # Create JSON object from processed variables
-          echo "{" > processed_env.json
-          cat "$TEMP_ENV_FILE" | sed '$!s/$/,/' >> processed_env.json
-          echo "}" >> processed_env.json
-          
-          # Set output
-          echo "env_vars<<EOF" >> $GITHUB_OUTPUT
-          cat processed_env.json >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
-          # Cleanup
-          rm "$TEMP_ENV_FILE"
-          rm processed_env.json
 
       - name: Deploy to Lightsail Beta
         env:
@@ -174,46 +169,41 @@ jobs:
       - name: Load environment variables
         id: load-env
         run: |
-          echo "Loading environment variables from env.yaml"
-          TEMP_ENV_FILE=$(mktemp)
-          
-          # Read env.yaml and replace GitHub Actions secret placeholders
           if [ "${{ github.event.inputs.environment }}" = "beta" ]; then
-            ENV_SECTION="beta"
+            echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+            echo '{
+              "CONFIG_MODE": "${{ secrets.BETA_CONFIG_MODE }}",
+              "SQLALCHEMY_DATABASE_URI": "${{ secrets.BETA_SQLALCHEMY_DATABASE_URI }}",
+              "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+              "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+              "AWS_REGION": "${{ secrets.AWS_REGION }}",
+              "AWS_BUCKET_NAME": "${{ secrets.BETA_AWS_BUCKET_NAME }}",
+              "LANGCHAIN_PROJECT": "${{ secrets.BETA_LANGCHAIN_PROJECT }}",
+              "LANGCHAIN_API_KEY": "${{ secrets.BETA_LANGCHAIN_API_KEY }}",
+              "LANGCHAIN_ENDPOINT": "${{ secrets.BETA_LANGCHAIN_ENDPOINT }}",
+              "LANGCHAIN_TRACING_V2": "true",
+              "GROQ_API_KEY": "${{ secrets.BETA_GROQ_API_KEY }}",
+              "ANTHROPIC_API_KEY": "${{ secrets.BETA_ANTHROPIC_API_KEY }}"
+            }' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
-            ENV_SECTION="production"
+            echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+            echo '{
+              "CONFIG_MODE": "${{ secrets.PROD_CONFIG_MODE }}",
+              "SQLALCHEMY_DATABASE_URI": "${{ secrets.PROD_SQLALCHEMY_DATABASE_URI }}",
+              "AWS_ACCESS_KEY_ID": "${{ secrets.AWS_ACCESS_KEY_ID }}",
+              "AWS_SECRET_ACCESS_KEY": "${{ secrets.AWS_SECRET_ACCESS_KEY }}",
+              "AWS_REGION": "${{ secrets.AWS_REGION }}",
+              "AWS_BUCKET_NAME": "${{ secrets.PROD_AWS_BUCKET_NAME }}",
+              "LANGCHAIN_PROJECT": "${{ secrets.PROD_LANGCHAIN_PROJECT }}",
+              "LANGCHAIN_API_KEY": "${{ secrets.PROD_LANGCHAIN_API_KEY }}",
+              "LANGCHAIN_ENDPOINT": "${{ secrets.PROD_LANGCHAIN_ENDPOINT }}",
+              "LANGCHAIN_TRACING_V2": "true",
+              "GROQ_API_KEY": "${{ secrets.PROD_GROQ_API_KEY }}",
+              "ANTHROPIC_API_KEY": "${{ secrets.PROD_ANTHROPIC_API_KEY }}"
+            }' >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
-          
-          # Process each environment variable and replace secrets
-          yq eval ".$ENV_SECTION" .github/env.yaml | while IFS=": " read -r key value; do
-            # Remove leading spaces and quotes
-            key=$(echo "$key" | xargs)
-            value=$(echo "$value" | xargs)
-            
-            # If value contains secrets reference, evaluate it
-            if [[ $value == *'\${{ secrets.'* ]]; then
-              # Extract secret name without the GitHub Actions syntax
-              secret_name=$(echo "$value" | sed -E 's/.*secrets\.([A-Z_]+).*/\1/')
-              # Use the actual secret value from GitHub environment
-              echo "\"$key\": \"${{ secrets[format('{0}', secret_name)] }}\"" >> "$TEMP_ENV_FILE"
-            else
-              echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
-            fi
-          done
-          
-          # Create JSON object from processed variables
-          echo "{" > processed_env.json
-          cat "$TEMP_ENV_FILE" | sed '$!s/$/,/' >> processed_env.json
-          echo "}" >> processed_env.json
-          
-          # Set output
-          echo "env_vars<<EOF" >> $GITHUB_OUTPUT
-          cat processed_env.json >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
-          # Cleanup
-          rm "$TEMP_ENV_FILE"
-          rm processed_env.json
 
       - name: Deploy to Lightsail Production
         env:
