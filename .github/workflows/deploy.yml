@@ -58,11 +58,46 @@ jobs:
         id: load-env
         run: |
           echo "Loading beta environment variables from env.yaml"
-          # Convert YAML to JSON and process environment variables
-          ENV_VARS=$(yq eval -o=json '.beta' .github/env.yaml)
+          # Create a temporary file for processed environment variables
+          TEMP_ENV_FILE=$(mktemp)
+          
+          # Read env.yaml and replace GitHub Actions secret placeholders
+          if [ "${{ github.event.inputs.environment }}" = "beta" ]; then
+            ENV_SECTION="beta"
+          else
+            ENV_SECTION="production"
+          fi
+          
+          # Process each environment variable and replace secrets
+          yq eval ".$ENV_SECTION" .github/env.yaml | while IFS=": " read -r key value; do
+            # Remove leading spaces and quotes
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+            
+            # If value contains secrets reference, evaluate it
+            if [[ $value == *'${{ secrets.'* ]]; then
+              # Extract secret name and get its value
+              secret_name=$(echo "$value" | sed -E 's/.*secrets.([A-Z_]+).*/\1/')
+              evaluated_value="${!secret_name}"
+              echo "\"$key\": \"$evaluated_value\"" >> "$TEMP_ENV_FILE"
+            else
+              echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
+            fi
+          done
+          
+          # Create JSON object from processed variables
+          echo "{" > processed_env.json
+          cat "$TEMP_ENV_FILE" | sed '$!s/$/,/' >> processed_env.json
+          echo "}" >> processed_env.json
+          
+          # Set output
           echo "env_vars<<EOF" >> $GITHUB_OUTPUT
-          echo "$ENV_VARS" >> $GITHUB_OUTPUT
+          cat processed_env.json >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Cleanup
+          rm "$TEMP_ENV_FILE"
+          rm processed_env.json
 
       - name: Deploy to Lightsail Beta
         env:
@@ -141,11 +176,46 @@ jobs:
         id: load-env
         run: |
           echo "Loading production environment variables from env.yaml"
-          # Convert YAML to JSON and process environment variables
-          ENV_VARS=$(yq eval -o=json '.production' .github/env.yaml)
+          # Create a temporary file for processed environment variables
+          TEMP_ENV_FILE=$(mktemp)
+          
+          # Read env.yaml and replace GitHub Actions secret placeholders
+          if [ "${{ github.event.inputs.environment }}" = "beta" ]; then
+            ENV_SECTION="beta"
+          else
+            ENV_SECTION="production"
+          fi
+          
+          # Process each environment variable and replace secrets
+          yq eval ".$ENV_SECTION" .github/env.yaml | while IFS=": " read -r key value; do
+            # Remove leading spaces and quotes
+            key=$(echo "$key" | xargs)
+            value=$(echo "$value" | xargs)
+            
+            # If value contains secrets reference, evaluate it
+            if [[ $value == *'${{ secrets.'* ]]; then
+              # Extract secret name and get its value
+              secret_name=$(echo "$value" | sed -E 's/.*secrets.([A-Z_]+).*/\1/')
+              evaluated_value="${!secret_name}"
+              echo "\"$key\": \"$evaluated_value\"" >> "$TEMP_ENV_FILE"
+            else
+              echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
+            fi
+          done
+          
+          # Create JSON object from processed variables
+          echo "{" > processed_env.json
+          cat "$TEMP_ENV_FILE" | sed '$!s/$/,/' >> processed_env.json
+          echo "}" >> processed_env.json
+          
+          # Set output
           echo "env_vars<<EOF" >> $GITHUB_OUTPUT
-          echo "$ENV_VARS" >> $GITHUB_OUTPUT
+          cat processed_env.json >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Cleanup
+          rm "$TEMP_ENV_FILE"
+          rm processed_env.json
 
       - name: Deploy to Lightsail Production
         env:
