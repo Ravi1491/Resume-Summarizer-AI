@@ -11,14 +11,14 @@ on:
         required: true
         type: choice
         options:
-          - qa
+          - beta
           - production
 
 jobs:
-  deploy_qa:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa'
+  deploy_beta:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'beta'
     runs-on: ubuntu-latest
-    environment: qa
+    environment: beta
     
     steps:
       - uses: actions/checkout@v4
@@ -31,10 +31,10 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/resume-be-qa .
+          docker build -t ${{secrets.DOCKERHUB_USERNAME}}/resume-be-beta .
 
       - name: Push to Dockerhub
-        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/resume-be-qa:latest
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/resume-be-beta:latest
 
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
@@ -49,34 +49,29 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to Lightsail QA
+      - name: Load environment variables
+        id: load-env
+        run: |
+          echo "Loading beta environment variables from env.yaml"
+          BETA_ENV=$(yq eval '.beta' .github/env.yaml -o=json)
+          echo "env_vars=$BETA_ENV" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Lightsail Beta
         env:
-          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_QA}}
-          CONTAINER_NAME: ${{secrets.CONTAINER_NAME_QA}}
-          IMAGE_NAME: ${{secrets.DOCKERHUB_USERNAME}}/resume-be-qa
+          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_BETA}}
+          CONTAINER_NAME: ${{secrets.CONTAINER_NAME_BETA}}
+          IMAGE_NAME: ${{secrets.DOCKERHUB_USERNAME}}/resume-be-beta
           CONTAINER_PORT: 5000
+          ENV_VARS: ${{ steps.load-env.outputs.env_vars }}
         run: |
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{
-              \"CONFIG_MODE\":\"${{ secrets.CONFIG_MODE }}\",
-              \"SQLALCHEMY_DATABASE_URI\":\"${{ secrets.SQLALCHEMY_DATABASE_URI }}\",
-              \"AWS_ACCESS_KEY_ID\":\"${{ secrets.AWS_ACCESS_KEY_ID }}\",
-              \"AWS_SECRET_ACCESS_KEY\":\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\",
-              \"AWS_REGION\":\"${{ secrets.AWS_REGION }}\",
-              \"AWS_BUCKET_NAME\":\"${{ secrets.AWS_BUCKET_NAME }}\",
-              \"LANGCHAIN_PROJECT\":\"${{ secrets.LANGCHAIN_PROJECT }}\",
-              \"LANGCHAIN_API_KEY\":\"${{ secrets.LANGCHAIN_API_KEY }}\",
-              \"LANGCHAIN_ENDPOINT\":\"${{ secrets.LANGCHAIN_ENDPOINT }}\",
-              \"LANGCHAIN_TRACING_V2\":\"${{ secrets.LANGCHAIN_TRACING_V2 }}\",
-              \"GROQ_API_KEY\":\"${{ secrets.GROQ_API_KEY }}\",
-              \"ANTHROPIC_API_KEY\":\"${{ secrets.ANTHROPIC_API_KEY }}\"
-            }}}" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":$ENV_VARS}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"health\",\"successCodes\":\"200-499\"}}"
 
-      - name: Check QA Deployment Status
+      - name: Check Beta Deployment Status
         env:
-          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_QA}}
+          SERVICE_NAME: ${{secrets.LIGHTSAIL_SERVICE_NAME_BETA}}
         run: |
           echo "Checking deployment status..."
           while true; do
@@ -85,10 +80,10 @@ jobs:
             echo "Current deployment state: $DEPLOYMENT_STATE"
             echo "Current container service state: $CONTAINER_STATE"
             if [ "$DEPLOYMENT_STATE" = "ACTIVE" ] && [ "$CONTAINER_STATE" = "RUNNING" ]; then
-              echo "QA Deployment successful and service is running!"
+              echo "Beta Deployment successful and service is running!"
               break
             elif [ "$DEPLOYMENT_STATE" = "FAILED" ] || [ "$CONTAINER_STATE" = "FAILED" ]; then
-              echo "QA Deployment failed. Check Lightsail logs for more information."
+              echo "Beta Deployment failed. Check Lightsail logs for more information."
               exit 1
             fi
             echo "Waiting for deployment to complete..."
@@ -134,8 +129,12 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod a+x /usr/local/bin/yq
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
+      - name: Load environment variables
+        id: load-env
+        run: |
+          echo "Loading production environment variables from env.yaml"
+          PROD_ENV=$(yq eval '.production' .github/env.yaml -o=json)
+          echo "env_vars=$PROD_ENV" >> $GITHUB_OUTPUT
 
       - name: Deploy to Lightsail Production
         env:
@@ -143,10 +142,11 @@ jobs:
           CONTAINER_NAME: ${{secrets.CONTAINER_NAME_PROD}}
           IMAGE_NAME: ${{secrets.DOCKERHUB_USERNAME}}/resume-be-prod
           CONTAINER_PORT: 5000
+          ENV_VARS: ${{ steps.load-env.outputs.env_vars }}
         run: |
           aws lightsail create-container-service-deployment \
             --service-name $SERVICE_NAME \
-            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":{\"GROQ_API_KEY_V1\":\"${{ secrets.GROQ_API_KEY_V1 }}\",\"GROQ_API_KEY_V2\":\"${{ secrets.GROQ_API_KEY_V2 }}\",\"SQLALCHEMY_DATABASE_URI\":\"${{ secrets.SQLALCHEMY_DATABASE_URI_PROD }}\",\"GMAIL_USER\":\"${{ secrets.GMAIL_USER }}\",\"GMAIL_PASSWORD\":\"${{ secrets.GMAIL_PASSWORD }}\",\"SMTP_SERVER\":\"${{ secrets.SMTP_SERVER }}\",\"SMTP_PORT_SSL\":\"${{ secrets.SMTP_PORT_SSL }}\"}}}" \
+            --containers "{\"$CONTAINER_NAME\":{\"image\":\"$IMAGE_NAME:latest\",\"ports\":{\"5000\":\"HTTP\"},\"environment\":$ENV_VARS}}" \
             --public-endpoint "{\"containerName\":\"$CONTAINER_NAME\",\"containerPort\":5000,\"healthCheck\":{\"healthyThreshold\":2,\"unhealthyThreshold\":2,\"timeoutSeconds\":2,\"intervalSeconds\":5,\"path\":\"/\",\"successCodes\":\"200-499\"}}"
 
       - name: Check Production Deployment Status
