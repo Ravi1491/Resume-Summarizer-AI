@@ -56,25 +56,13 @@ jobs:
 
       - name: Load environment variables
         id: load-env
-        env:
-          secrets_BETA_CONFIG_MODE: ${{ secrets.BETA_CONFIG_MODE }}
-          secrets_BETA_SQLALCHEMY_DATABASE_URI: ${{ secrets.BETA_SQLALCHEMY_DATABASE_URI }}
-          secrets_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secrets_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          secrets_AWS_REGION: ${{ secrets.AWS_REGION }}
-          secrets_BETA_AWS_BUCKET_NAME: ${{ secrets.BETA_AWS_BUCKET_NAME }}
-          secrets_BETA_LANGCHAIN_PROJECT: ${{ secrets.BETA_LANGCHAIN_PROJECT }}
-          secrets_BETA_LANGCHAIN_API_KEY: ${{ secrets.BETA_LANGCHAIN_API_KEY }}
-          secrets_BETA_LANGCHAIN_ENDPOINT: ${{ secrets.BETA_LANGCHAIN_ENDPOINT }}
-          secrets_BETA_GROQ_API_KEY: ${{ secrets.BETA_GROQ_API_KEY }}
-          secrets_BETA_ANTHROPIC_API_KEY: ${{ secrets.BETA_ANTHROPIC_API_KEY }}
         run: |
           echo "Loading beta environment variables from env.yaml"
-          # Convert YAML to JSON and escape special characters
-          ENV_JSON=$(yq eval -o=json '.beta' .github/env.yaml | sed 's/\${{ secrets\.\([^}]*\) }}/\$secrets_\1/g')
-          # Replace the placeholders with actual secrets
-          ENV_JSON_EXPANDED=$(echo "$ENV_JSON" | envsubst)
-          echo "env_vars=$ENV_JSON_EXPANDED" >> $GITHUB_OUTPUT
+          # Convert YAML to JSON and process environment variables
+          ENV_VARS=$(yq eval -o=json '.beta' .github/env.yaml)
+          echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+          echo "$ENV_VARS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Deploy to Lightsail Beta
         env:
@@ -151,25 +139,13 @@ jobs:
 
       - name: Load environment variables
         id: load-env
-        env:
-          secrets_PROD_CONFIG_MODE: ${{ secrets.PROD_CONFIG_MODE }}
-          secrets_PROD_SQLALCHEMY_DATABASE_URI: ${{ secrets.PROD_SQLALCHEMY_DATABASE_URI }}
-          secrets_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secrets_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          secrets_AWS_REGION: ${{ secrets.AWS_REGION }}
-          secrets_PROD_AWS_BUCKET_NAME: ${{ secrets.PROD_AWS_BUCKET_NAME }}
-          secrets_PROD_LANGCHAIN_PROJECT: ${{ secrets.PROD_LANGCHAIN_PROJECT }}
-          secrets_PROD_LANGCHAIN_API_KEY: ${{ secrets.PROD_LANGCHAIN_API_KEY }}
-          secrets_PROD_LANGCHAIN_ENDPOINT: ${{ secrets.PROD_LANGCHAIN_ENDPOINT }}
-          secrets_PROD_GROQ_API_KEY: ${{ secrets.PROD_GROQ_API_KEY }}
-          secrets_PROD_ANTHROPIC_API_KEY: ${{ secrets.PROD_ANTHROPIC_API_KEY }}
         run: |
           echo "Loading production environment variables from env.yaml"
-          # Convert YAML to JSON and escape special characters
-          ENV_JSON=$(yq eval -o=json '.production' .github/env.yaml | sed 's/\${{ secrets\.\([^}]*\) }}/\$secrets_\1/g')
-          # Replace the placeholders with actual secrets
-          ENV_JSON_EXPANDED=$(echo "$ENV_JSON" | envsubst)
-          echo "env_vars=$ENV_JSON_EXPANDED" >> $GITHUB_OUTPUT
+          # Convert YAML to JSON and process environment variables
+          ENV_VARS=$(yq eval -o=json '.production' .github/env.yaml)
+          echo "env_vars<<EOF" >> $GITHUB_OUTPUT
+          echo "$ENV_VARS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Deploy to Lightsail Production
         env:
