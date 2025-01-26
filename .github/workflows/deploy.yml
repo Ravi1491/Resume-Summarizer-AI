@@ -57,8 +57,7 @@ jobs:
       - name: Load environment variables
         id: load-env
         run: |
-          echo "Loading beta environment variables from env.yaml"
-          # Create a temporary file for processed environment variables
+          echo "Loading environment variables from env.yaml"
           TEMP_ENV_FILE=$(mktemp)
           
           # Read env.yaml and replace GitHub Actions secret placeholders
@@ -75,11 +74,11 @@ jobs:
             value=$(echo "$value" | xargs)
             
             # If value contains secrets reference, evaluate it
-            if [[ $value == *'${{ secrets.'* ]]; then
-              # Extract secret name and get its value
-              secret_name=$(echo "$value" | sed -E 's/.*secrets.([A-Z_]+).*/\1/')
-              evaluated_value="${!secret_name}"
-              echo "\"$key\": \"$evaluated_value\"" >> "$TEMP_ENV_FILE"
+            if [[ $value == *'\${{ secrets.'* ]]; then
+              # Extract secret name without the GitHub Actions syntax
+              secret_name=$(echo "$value" | sed -E 's/.*secrets\.([A-Z_]+).*/\1/')
+              # Use the actual secret value from GitHub environment
+              echo "\"$key\": \"${{ secrets[format('{0}', secret_name)] }}\"" >> "$TEMP_ENV_FILE"
             else
               echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
             fi
@@ -175,8 +174,7 @@ jobs:
       - name: Load environment variables
         id: load-env
         run: |
-          echo "Loading production environment variables from env.yaml"
-          # Create a temporary file for processed environment variables
+          echo "Loading environment variables from env.yaml"
           TEMP_ENV_FILE=$(mktemp)
           
           # Read env.yaml and replace GitHub Actions secret placeholders
@@ -193,11 +191,11 @@ jobs:
             value=$(echo "$value" | xargs)
             
             # If value contains secrets reference, evaluate it
-            if [[ $value == *'${{ secrets.'* ]]; then
-              # Extract secret name and get its value
-              secret_name=$(echo "$value" | sed -E 's/.*secrets.([A-Z_]+).*/\1/')
-              evaluated_value="${!secret_name}"
-              echo "\"$key\": \"$evaluated_value\"" >> "$TEMP_ENV_FILE"
+            if [[ $value == *'\${{ secrets.'* ]]; then
+              # Extract secret name without the GitHub Actions syntax
+              secret_name=$(echo "$value" | sed -E 's/.*secrets\.([A-Z_]+).*/\1/')
+              # Use the actual secret value from GitHub environment
+              echo "\"$key\": \"${{ secrets[format('{0}', secret_name)] }}\"" >> "$TEMP_ENV_FILE"
             else
               echo "\"$key\": $value" >> "$TEMP_ENV_FILE"
             fi
