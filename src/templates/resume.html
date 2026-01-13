@@ -1,0 +1,712 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .header {
+    background: white;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .back-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: inline-block;
+  }
+
+  .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .main-container {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 2rem;
+    max-width: 1800px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    min-height: calc(100vh - 120px);
+  }
+
+  /* Form Side */
+  .form-side {
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+    padding-right: 1rem;
+  }
+
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .section-button {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  }
+
+  .section-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .section-button.collapsed {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    color: #2d3436;
+    box-shadow: none;
+  }
+
+  .section-button::after {
+    content: '−';
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition: transform 0.3s ease;
+  }
+
+  .section-button.collapsed::after {
+    content: '+';
+  }
+
+  .section-content {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;
+    opacity: 1;
+    padding-top: 1.5rem;
+  }
+
+  .section-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .entry-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .entry-item {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .add-btn {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(79, 172, 254, 0.3);
+    font-size: 0.9rem;
+  }
+
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 1.25rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    margin-top: 1.5rem;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Preview Side */
+  .preview-side {
+    position: sticky;
+    top: 120px;
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+  }
+
+  .preview-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .preview-header {
+    text-align: center;
+    padding: 2rem;
+    background: var(--primary-gradient);
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  .preview-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  /* Resume Preview Styles */
+  .resume-content {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.8;
+    color: #2d3436;
+  }
+
+  .resume-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 3px solid;
+    border-image: var(--primary-gradient);
+    border-image-slice: 1;
+  }
+
+  .resume-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #2d3436;
+  }
+
+  .resume-contact {
+    font-size: 0.95rem;
+    color: #636e72;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .resume-section {
+    margin-bottom: 2rem;
+  }
+
+  .resume-section h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .experience-item,
+  .project-item {
+    margin-bottom: 1.5rem;
+  }
+
+  .experience-item h3,
+  .project-item h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin-bottom: 0.25rem;
+  }
+
+  .company-name {
+    font-weight: 600;
+    color: #636e72;
+    margin-bottom: 0.5rem;
+  }
+
+  .resume-section ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .resume-section li {
+    margin-bottom: 0.25rem;
+    color: #2d3436;
+  }
+
+  .skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .empty-preview {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #636e72;
+  }
+
+  .empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Scrollbar */
+  .form-side::-webkit-scrollbar,
+  .preview-side::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .form-side::-webkit-scrollbar-track,
+  .preview-side::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .form-side::-webkit-scrollbar-thumb,
+  .preview-side::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 1200px) {
+    .main-container {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-side {
+      position: relative;
+      top: 0;
+      height: auto;
+    }
+
+    .form-side {
+      height: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-container {
+      padding: 0 1rem;
+    }
+
+    .preview-card,
+    .form-card {
+      padding: 1.5rem;
+    }
+
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<header class="header">
+  <div class="header-left">
+    <div class="logo-icon">✨</div>
+    <h1 class="page-title">Resume Builder</h1>
+  </div>
+  <a href="{{ url_for('resume.home') }}" class="back-btn">← Back to Dashboard</a>
+</header>
+
+<div class="main-container">
+  <!-- Form Side -->
+  <div class="form-side">
+    <form id="resumeForm" action="{{ url_for('resume.generate_resume') }}" method="POST">
+      
+      <!-- Personal Information -->
+      <div class="form-card">
+        <button type="button" class="section-button" onclick="toggleSection(this)">
+          👤 Personal Information
+        </button>
+        <div class="section-content">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" />
+          </div>
+          <div class="form-group">
+            <label for="linkedin">LinkedIn</label>
+            <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/johndoe" />
+          </div>
+          <div class="form-group">
+            <label for="github">GitHub</label>
+            <input type="url" id="github" name="github" placeholder="https://github.com/johndoe" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Experience -->
+      <div class="form-card">
+        <button type="button" class="section-button" onclick="toggleSection(this)">
+          💼 Work Experience
+        </button>
+        <div class="section-content">
+          <div class="entry-container" id="workExperienceContainer">
+            <div class="entry-item">
+              <div class="form-group">
+                <label>Position *</label>
+                <input type="text" name="position_0" placeholder="Software Engineer" required />
+              </div>
+              <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" name="company-name_0" placeholder="Tech Company Inc." required />
+              </div>
+              <div class="form-group">
+                <label>Description *</label>
+                <textarea name="description_0" rows="5" placeholder="• Led development of...&#10;• Implemented features...&#10;• Collaborated with..." required></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-btn" onclick="addWorkExperience()">+ Add Another Experience</button>
+          <input type="hidden" name="work_exp_count" id="work_exp_count" value="1" />
+        </div>
+      </div>
+
+      <!-- Projects -->
+      <div class="form-card">
+        <button type="button" class="section-button" onclick="toggleSection(this)">
+          🚀 Projects
+        </button>
+        <div class="section-content">
+          <div class="entry-container" id="projectsContainer">
+            <div class="entry-item">
+              <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" name="project-name[]" placeholder="Awesome Project" />
+              </div>
+              <div class="form-group">
+                <label>Project URL</label>
+                <input type="url" name="project-url[]" placeholder="https://github.com/user/project" />
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea name="project-description[]" rows="4" placeholder="• Built a web app that...&#10;• Utilized technologies..."></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="add-btn" onclick="addProject()">+ Add Another Project</button>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="form-card">
+        <button type="button" class="section-button" onclick="toggleSection(this)">
+          ⚡ Skills
+        </button>
+        <div class="section-content">
+          <div class="form-group">
+            <label>Skills (comma-separated) *</label>
+            <textarea name="skills" rows="3" placeholder="Python, JavaScript, React, Node.js, SQL, Docker..." required></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="form-card">
+        <button type="button" class="section-button" onclick="toggleSection(this)">
+          🎓 Education
+        </button>
+        <div class="section-content">
+          <div class="form-group">
+            <label>Degree *</label>
+            <input type="text" name="degree" placeholder="Bachelor of Science in Computer Science" required />
+          </div>
+          <div class="form-group">
+            <label>Institution *</label>
+            <input type="text" name="institution" placeholder="University Name" required />
+          </div>
+          <div class="form-group">
+            <label>Graduation Year</label>
+            <input type="text" name="graduation-year" placeholder="2024" />
+          </div>
+          <div class="form-group">
+            <label>GPA</label>
+            <input type="text" name="gpa" placeholder="3.8/4.0" />
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">🎨 Generate Resume</button>
+    </form>
+  </div>
+
+  <!-- Preview Side -->
+  <div class="preview-side">
+    <div class="preview-card">
+      <div class="preview-header">
+        <h2 class="preview-title">Resume Preview</h2>
+      </div>
+
+      {% if data %}
+      <div class="resume-content">
+        <div class="resume-header">
+          <h1>{{ data['personal_info']['name'] }}</h1>
+          <div class="resume-contact">
+            <span>{{ data['personal_info']['email'] }}</span>
+            {% if data['personal_info']['phone'] %}<span>•</span><span>{{ data['personal_info']['phone'] }}</span>{% endif %}
+            {% if data['personal_info']['linkedin'] %}<span>•</span><span>LinkedIn</span>{% endif %}
+            {% if data['personal_info']['github'] %}<span>•</span><span>GitHub</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="resume-section">
+          <h2>Experience</h2>
+          {% for experience in data['work_experiences'] %}
+          <div class="experience-item">
+            <h3>{{ experience['position'] }}</h3>
+            <div class="company-name">{{ experience['company'] }}</div>
+            <ul>
+              {% for description in experience['description'] %}
+              <li>{{ description }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if data['projects'] and data['projects'][0]['name'] %}
+        <div class="resume-section">
+          <h2>Projects</h2>
+          {% for project in data['projects'] %}
+          {% if project['name'] %}
+          <div class="project-item">
+            <h3>{{ project['name'] }}</h3>
+            <ul>
+              {% for description in project['description'] %}
+              <li>{{ description }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="resume-section">
+          <h2>Skills</h2>
+          <div class="skills-list">
+            {% for skill in data["skills"] %}
+            <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="resume-section">
+          <h2>Education</h2>
+          <div class="experience-item">
+            <h3>{{ data['education']['degree'] }}</h3>
+            <div class="company-name">
+              {{ data['education']['institution'] }}
+              {% if data['education']['year'] %} • {{ data['education']['year'] }}{% endif %}
+              {% if data['education']['gpa'] %} • GPA: {{ data['education']['gpa'] }}{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-preview">
+        <div class="empty-icon">📝</div>
+        <h3>No Preview Available</h3>
+        <p>Fill out the form and generate your resume to see a preview here</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleSection(button) {
+    const content = button.nextElementSibling;
+    button.classList.toggle('collapsed');
+    content.classList.toggle('collapsed');
+  }
+
+  let workExpCount = 1;
+  function addWorkExperience() {
+    const container = document.getElementById('workExperienceContainer');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'entry-item';
+    newEntry.innerHTML = `
+      <div class="form-group">
+        <label>Position *</label>
+        <input type="text" name="position_${workExpCount}" placeholder="Software Engineer" required />
+      </div>
+      <div class="form-group">
+        <label>Company Name *</label>
+        <input type="text" name="company-name_${workExpCount}" placeholder="Tech Company Inc." required />
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea name="description_${workExpCount}" rows="5" placeholder="• Led development of...&#10;• Implemented features..." required></textarea>
+      </div>
+    `;
+    container.appendChild(newEntry);
+    document.getElementById('work_exp_count').value = ++workExpCount;
+  }
+
+  function addProject() {
+    const container = document.getElementById('projectsContainer');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'entry-item';
+    newEntry.innerHTML = `
+      <div class="form-group">
+        <label>Project Name</label>
+        <input type="text" name="project-name[]" placeholder="Awesome Project" />
+      </div>
+      <div class="form-group">
+        <label>Project URL</label>
+        <input type="url" name="project-url[]" placeholder="https://github.com/user/project" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="project-description[]" rows="4" placeholder="• Built a web app that...&#10;• Utilized technologies..."></textarea>
+      </div>
+    `;
+    container.appendChild(newEntry);
+  }
+
+  // Initialize - collapse all sections except personal info by default
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.section-button');
+    buttons.forEach((button, index) => {
+      if (index > 0) { // Keep first section open
+        toggleSection(button);
+      }
+    });
+  });
+</script>
+{% endblock %}

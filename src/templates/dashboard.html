@@ -1,131 +1,345 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
 <style>
   :root {
-    --primary-color: #4a90e2;
-    --secondary-color: #f5f7fa;
-    --text-color: #333333;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --danger-color: #f5576c;
+    --success-color: #00f2fe;
   }
 
   body {
-    font-family: "Inter", sans-serif;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
   }
 
-  .container {
-    max-width: 1200px;
-    padding: 2rem;
-    margin: 0 auto;
-  }
-
+  /* Header */
   .dashboard-header {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-    text-align: center;
+    background: white;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
-  .dashboard-header h1 {
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 2.5rem;
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin: 0;
   }
 
-  .content-section {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow);
-  }
-
-  .content-section h2,
-  .content-section h3 {
-    color: var(--primary-color);
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-  }
-
-  .form-control {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    transition: border-color 0.3s ease;
-    width: 100%;
-  }
-
-  .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
-  }
-
-  .btn {
-    border-radius: 8px;
+  .logout-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
     padding: 0.75rem 1.5rem;
+    border-radius: 50px;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+  }
+
+  .logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+
+  /* Card Styles */
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin: 0;
+  }
+
+  /* Grid Layout */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Upload Section */
+  .upload-area {
+    border: 3px dashed #e9ecef;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8f9fa;
     transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
+  }
+
+  .upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.05);
+  }
+
+  .upload-area.drag-over {
+    border-color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.02);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .upload-area h3 {
+    font-size: 1.2rem;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-area p {
+    color: #636e72;
+    font-size: 0.95rem;
+  }
+
+  #pdfs {
+    display: none;
+  }
+
+  .file-list {
+    margin-top: 1.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .file-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .file-name {
+    font-weight: 500;
+    color: #2d3436;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .remove-file {
+    background: #fff5f5;
+    color: #f5576c;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .remove-file:hover {
+    background: #f5576c;
+    color: white;
   }
 
   .btn-primary {
-    background-color: var(--primary-color);
-    border: none;
+    background: var(--primary-gradient);
     color: white;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    width: 100%;
+    margin-top: 1rem;
   }
 
   .btn-primary:hover {
-    background-color: #3a7bc8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
   }
 
-  .btn-danger {
-    background-color: #e74c3c;
-    border: none;
-    color: white;
+  /* Job Description Form */
+  .form-group {
+    margin-bottom: 1.5rem;
   }
 
-  .btn-danger:hover {
-    background-color: #c0392b;
-  }
-
-  .table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-bottom: 1rem;
-  }
-
-  .table th,
-  .table td {
-    border: none;
-    padding: 1rem;
-    text-align: left;
-  }
-
-  .table th {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
+  .form-label {
+    display: block;
     font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
   }
 
-  .table tbody tr {
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+
+  .link-button {
+    display: inline-block;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 0.75rem;
+    transition: color 0.3s ease;
+  }
+
+  .link-button:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+
+  /* Table Styles */
+  .table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  thead th {
+    padding: 1.25rem 1rem;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f0f0f0;
     transition: background-color 0.3s ease;
   }
 
-  .table tbody tr:hover {
-    background-color: rgba(74, 144, 226, 0.1);
+  tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+  }
+
+  tbody td {
+    padding: 1.25rem 1rem;
+    color: #2d3436;
   }
 
   .truncate {
     max-width: 200px;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .action-buttons {
@@ -133,283 +347,299 @@
     gap: 0.5rem;
   }
 
-  .file-input-wrapper {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    width: 100%;
-  }
-
-  .file-input-wrapper input[type="file"] {
-    font-size: 100px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-
-  .file-input-wrapper .btn {
-    display: block;
-    width: 100%;
-    text-align: center;
-  }
-
-  .horizontal-sections {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .horizontal-sections > div {
-    flex: 1;
-  }
-
-  .textarea-wrapper {
-    margin-bottom: 1rem;
-  }
-
-  .textarea-wrapper textarea {
-    width: 100%;
-    min-height: 120px;
-    resize: vertical;
-  }
-
-  .upload-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .file-list {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    max-height: 150px;
-    overflow-y: auto;
-  }
-
-  .file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.25rem 0;
-  }
-
-  .file-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 80%;
-  }
-
-  .remove-file {
-    background: none;
-    border: none;
-    color: #dc3545;
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 0 0.5rem;
-  }
-
-  .logout-button {
-    position: absolute;
-    top: 3rem;
-    right: 1rem;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
+  .btn-sm {
     padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    border: none;
   }
 
-  .logout-button:hover {
-    background-color: #c0392b;
+  .btn-danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(245, 87, 108, 0.3);
   }
 
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  }
+
+  .btn-view {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(79, 172, 254, 0.3);
+  }
+
+  .btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #636e72;
+  }
+
+  .empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Responsive Design */
   @media (max-width: 768px) {
-    .horizontal-sections {
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
       flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .container {
+      padding: 0 1rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+    }
+
+    .table-container {
+      font-size: 0.85rem;
+    }
+
+    thead th,
+    tbody td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .truncate {
+      max-width: 100px;
     }
   }
 </style>
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-  rel="stylesheet"
-/>
-{% endblock %} {% block body %}
-<div>
-  <form
-    action="{{ url_for('auth.logout') }}"
-    method="POST"
-    style="display: inline"
-  >
-    <button type="submit" id="logoutButton" class="logout-button">
-      Logout
-    </button>
+{% endblock %}
+
+{% block body %}
+<header class="dashboard-header">
+  <div class="header-left">
+    <div class="logo-icon">📄</div>
+    <h1 class="dashboard-title">Dashboard</h1>
+  </div>
+  <form action="{{ url_for('auth.logout') }}" method="POST" style="margin: 0;">
+    <button type="submit" class="logout-btn">Logout</button>
   </form>
-  <div class="container">
-    <div class="dashboard-header">
-      <h1>Resume AI Summarizer</h1>
-    </div>
+</header>
 
-    <div class="horizontal-sections">
-      <div class="content-section">
-        <h2>Upload PDF</h2>
-        <form
-          action="/upload"
-          method="post"
-          enctype="multipart/form-data"
-          class="upload-form"
-          id="uploadForm"
-        >
-          <div class="file-input-wrapper">
-            <button class="btn btn-primary" type="button">Choose Files</button>
-            <input
-              type="file"
-              id="pdfs"
-              name="pdfs"
-              accept="application/pdf"
-              multiple
-            />
-          </div>
-          <div id="fileList" class="file-list" style="display: none"></div>
-          <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+<div class="container">
+  <div class="grid-2">
+    <!-- Upload Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📤</div>
+        <h2 class="card-title">Upload Resume</h2>
       </div>
 
-      <div class="content-section">
-        <h3>Match Resume with Job Description</h3>
-        <form action="{{ url_for('resume.compare') }}" method="POST">
-          <div class="textarea-wrapper">
-            <textarea
-              class="form-control"
-              placeholder="Enter Job Description"
-              name="job_description"
-              rows="4"
-              required
-              minlength="10"
-            ></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Compare</button>
-        </form>
-      </div>
+      <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <div class="upload-area" onclick="document.getElementById('pdfs').click()">
+          <div class="upload-icon">📄</div>
+          <h3>Click or drag files here</h3>
+          <p>Support for PDF files only • Multiple files allowed</p>
+          <input type="file" id="pdfs" name="pdfs" accept="application/pdf" multiple />
+        </div>
+
+        <div id="fileList" class="file-list" style="display: none;"></div>
+
+        <button type="submit" class="btn-primary">Upload Files</button>
+      </form>
     </div>
 
-    <div class="content-section">
-      <h3>Uploaded Files</h3>
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Filename</th>
-              <th>Extracted Text</th>
-              <th>AI Generated Text</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for resume in uploaded_pdfs %}
-            <tr>
-              <td class="truncate">{{ resume.filename }}</td>
-              <td class="truncate">{{ resume.text }}</td>
-              <td class="truncate">{{ resume.ai_text }}</td>
-              <td>
-                <div class="action-buttons">
-                  <form
-                    action="/delete/{{resume.id}}"
-                    method="POST"
-                    class="d-inline"
-                  >
-                    <button type="submit" class="btn btn-danger btn-sm">
-                      Delete
-                    </button>
-                  </form>
-                  <form
-                    action="/view/{{resume.id}}"
-                    method="GET"
-                    class="d-inline"
-                  >
-                    <button type="submit" class="btn btn-primary btn-sm">
-                      View
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+    <!-- Job Matching Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🎯</div>
+        <h2 class="card-title">Job Matching</h2>
       </div>
+
+      <form action="{{ url_for('resume.compare') }}" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="job_description">Job Description</label>
+          <textarea id="job_description" name="job_description"
+            placeholder="Paste the job description here to match with your resumes..." required
+            minlength="10"></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Compare Resumes</button>
+      </form>
+
+      <a href="{{ url_for('resume.generate_resume') }}" class="link-button">
+        ✨ Generate New Resume →
+      </a>
     </div>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const fileInput = document.getElementById("pdfs");
-        const fileList = document.getElementById("fileList");
-        const uploadForm = document.getElementById("uploadForm");
+  </div>
 
-        fileInput.addEventListener("change", function () {
-          fileList.innerHTML = "";
-          fileList.style.display = "block";
+  <!-- Uploaded Files Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📁</div>
+      <h2 class="card-title">Your Resumes</h2>
+    </div>
 
-          Array.from(this.files).forEach((file, index) => {
-            const fileItem = document.createElement("div");
-            fileItem.className = "file-item";
-
-            const fileName = document.createElement("span");
-            fileName.className = "file-name";
-            fileName.textContent = file.name;
-
-            const removeButton = document.createElement("button");
-            removeButton.className = "remove-file";
-            removeButton.textContent = "×";
-            removeButton.onclick = function () {
-              fileItem.remove();
-              updateFileInput();
-            };
-
-            fileItem.appendChild(fileName);
-            fileItem.appendChild(removeButton);
-            fileList.appendChild(fileItem);
-          });
-
-          if (this.files.length === 0) {
-            fileList.style.display = "none";
-          }
-        });
-
-        function updateFileInput() {
-          const remainingFiles = Array.from(
-            fileList.querySelectorAll(".file-item")
-          ).map((item) => item.querySelector(".file-name").textContent);
-
-          const newFileList = new DataTransfer();
-          Array.from(fileInput.files).forEach((file) => {
-            if (remainingFiles.includes(file.name)) {
-              newFileList.items.add(file);
-            }
-          });
-
-          fileInput.files = newFileList.files;
-
-          if (fileInput.files.length === 0) {
-            fileList.style.display = "none";
-          }
-        }
-
-        uploadForm.addEventListener("submit", function (e) {
-          if (fileInput.files.length === 0) {
-            e.preventDefault();
-            alert("Please select at least one file to upload.");
-          }
-        });
-      });
-    </script>
+    {% if uploaded_pdfs and uploaded_pdfs|length > 0 %}
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Extracted Text</th>
+            <th>AI Summary</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for resume in uploaded_pdfs %}
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 600;">{{ resume.filename }}</span>
+              </div>
+            </td>
+            <td class="truncate">{{ resume.text }}</td>
+            <td class="truncate">{{ resume.ai_text }}</td>
+            <td>
+              <div class="action-buttons">
+                <form action="/view/{{resume.id}}" method="GET" style="margin: 0;">
+                  <button type="submit" class="btn-sm btn-view">View</button>
+                </form>
+                <form action="/delete/{{resume.id}}" method="POST" style="margin: 0;">
+                  <button type="submit" class="btn-sm btn-danger"
+                    onclick="return confirm('Are you sure you want to delete this resume?')">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <h3>No resumes uploaded yet</h3>
+      <p>Upload your first resume to get started with AI-powered analysis</p>
+    </div>
+    {% endif %}
   </div>
 </div>
+
+<script>
+  const fileInput = document.getElementById('pdfs');
+  const fileList = document.getElementById('fileList');
+  const uploadArea = document.querySelector('.upload-area');
+  const uploadForm = document.getElementById('uploadForm');
+
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // Highlight drop area when dragging over it
+  ['dragenter', 'dragover'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+      uploadArea.classList.add('drag-over');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+      uploadArea.classList.remove('drag-over');
+    }, false);
+  });
+
+  // Handle dropped files
+  uploadArea.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    fileInput.files = files;
+    displayFiles();
+  }, false);
+
+  // Handle file input change
+  fileInput.addEventListener('change', displayFiles);
+
+  function displayFiles() {
+    fileList.innerHTML = '';
+
+    if (fileInput.files.length === 0) {
+      fileList.style.display = 'none';
+      return;
+    }
+
+    fileList.style.display = 'block';
+
+    Array.from(fileInput.files).forEach((file, index) => {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+
+      const fileInfo = document.createElement('div');
+      fileInfo.className = 'file-info';
+
+      const fileIcon = document.createElement('div');
+      fileIcon.className = 'file-icon';
+      fileIcon.textContent = '📄';
+
+      const fileName = document.createElement('span');
+      fileName.className = 'file-name';
+      fileName.textContent = file.name;
+      fileName.title = file.name;
+
+      const removeButton = document.createElement('button');
+      removeButton.className = 'remove-file';
+      removeButton.textContent = '×';
+      removeButton.type = 'button';
+      removeButton.onclick = (e) => {
+        e.stopPropagation();
+        removeFile(index);
+      };
+
+      fileInfo.appendChild(fileIcon);
+      fileInfo.appendChild(fileName);
+      fileItem.appendChild(fileInfo);
+      fileItem.appendChild(removeButton);
+      fileList.appendChild(fileItem);
+    });
+  }
+
+  function removeFile(index) {
+    const dt = new DataTransfer();
+    const files = Array.from(fileInput.files);
+
+    files.forEach((file, i) => {
+      if (i !== index) dt.items.add(file);
+    });
+
+    fileInput.files = dt.files;
+    displayFiles();
+  }
+
+  uploadForm.addEventListener('submit', (e) => {
+    if (fileInput.files.length === 0) {
+      e.preventDefault();
+      alert('Please select at least one PDF file to upload.');
+    }
+  });
+</script>
 {% endblock %}

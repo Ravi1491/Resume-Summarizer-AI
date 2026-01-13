@@ -1,64 +1,179 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
-<link
-  href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-  rel="stylesheet"
-/>
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
 <style>
   body {
-    font-family: "Roboto", sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
   }
-  .not-found-container {
-    text-align: center;
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+
+  /* Animated Background */
+  body::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -250px;
+    right: -250px;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  body::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    bottom: -200px;
+    left: -200px;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(20px) rotate(5deg);
+    }
+  }
+
+  .error-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 4rem 3rem;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
     width: 90%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: slideIn 0.6s ease;
   }
-  h1 {
-    font-size: 4rem;
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .error-icon {
+    font-size: 8rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .error-code {
+    font-size: 6rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin: 0;
-    color: #e74c3c;
+    line-height: 1;
   }
+
   h2 {
-    font-size: 1.5rem;
-    margin-top: 0.5rem;
-    margin-bottom: 1.5rem;
-    color: #7f8c8d;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin: 1rem 0;
   }
+
   p {
-    margin-bottom: 1.5rem;
+    color: #636e72;
+    font-size: 1.1rem;
     line-height: 1.6;
+    margin-bottom: 2rem;
   }
-  .btn {
+
+  .btn-home {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #3498db;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
   }
-  .btn:hover {
-    background-color: #2980b9;
+
+  .btn-home:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+  }
+
+  .illustration {
+    margin-top: 2rem;
+    opacity: 0.6;
+    font-size: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    .error-container {
+      padding: 3rem 2rem;
+    }
+
+    .error-code {
+      font-size: 4rem;
+    }
+
+    .error-icon {
+      font-size: 5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
   }
 </style>
-{% endblock %} {% block body %}
-<div class="not-found-container">
-  <h1>404</h1>
+{% endblock %}
+
+{% block body %}
+<div class="error-container">
+  <div class="error-icon">🔍</div>
+  <h1 class="error-code">404</h1>
   <h2>Page Not Found</h2>
   <p>
-    Oops! The page you're looking for doesn't exist. It might have been moved or
-    deleted.
+    Oops! The page you're looking for seems to have wandered off. 
+    Don't worry, we'll help you get back on track.
   </p>
-  <a href="{{ url_for('dashboard.home') }}" class="btn">Go to Dashboard</a>
+  <a href="{{ url_for('resume.home') }}" class="btn-home">
+    ← Back to Dashboard
+  </a>
+  <div class="illustration">🚀 💼 📄 ✨</div>
 </div>
 {% endblock %}

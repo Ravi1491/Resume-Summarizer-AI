@@ -1,92 +1,330 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-/>
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
 <style>
   body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
   }
-  .container-fluid {
-    padding: 2rem;
-  }
-  h2 {
-    color: #1877f2;
-    margin-bottom: 1.5rem;
-    font-weight: bold;
-  }
-  .content-section {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  .job-description {
-    height: calc(100vh - 6rem);
-    overflow-y: auto;
-  }
-  .match-results {
-    height: calc(100vh - 6rem);
-    overflow-y: auto;
-  }
-  .match-table th {
-    background-color: #f0f2f5;
-    color: #1877f2;
-    font-weight: 600;
+
+  .header {
+    background: white;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 100;
   }
-  .match-table td {
-    vertical-align: middle;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
-  .percentage {
-    font-weight: bold;
-    color: #28a745;
+
+  .logo-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .back-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: inline-block;
+  }
+
+  .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+
+  .grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    height: fit-content;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-image-slice: 1;
+  }
+
+  .card-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin: 0;
+  }
+
+  .job-description {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #2d3436;
+    white-space: pre-wrap;
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    padding-right: 1rem;
+  }
+
+  .match-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .match-item {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .match-item:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+  }
+
+  .match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .match-filename {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3436;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .match-percentage {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .match-percentage-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .match-high {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+
+  .match-medium {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+    color: white;
+  }
+
+  .match-low {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+  }
+
+  .match-explanation {
+    color: #636e72;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #636e72;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  /* Scrollbar Styling */
+  .job-description::-webkit-scrollbar,
+  .match-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .job-description::-webkit-scrollbar-track,
+  .match-list::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+
+  .job-description::-webkit-scrollbar-thumb,
+  .match-list::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 1024px) {
+    .grid-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .job-description,
+    .match-list {
+      max-height: 400px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 1rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .match-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
   }
 </style>
-{% endblock %} {% block body %}
-<div class="container-fluid">
-  <h2 class="text-center mb-4">Job Description and Resume Matches</h2>
+{% endblock %}
 
-  <div class="row">
-    <div class="col-md-6">
-      <div class="content-section job-description">
-        <h4 class="mb-3">Job Description:</h4>
-        <p>{{ data.job_description }}</p>
+{% block body %}
+<header class="header">
+  <div class="header-left">
+    <div class="logo-icon">🎯</div>
+    <h1>Resume Match Results</h1>
+  </div>
+  <a href="{{ url_for('resume.home') }}" class="back-btn">← Back to Dashboard</a>
+</header>
+
+<div class="container">
+  <div class="grid-layout">
+    <!-- Job Description -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <h2 class="card-title">Job Description</h2>
       </div>
+      <div class="job-description">{{ data.job_description }}</div>
     </div>
 
-    <div class="col-md-6">
-      <div class="content-section match-results">
-        <h4 class="mb-3">Resume Matches:</h4>
-        <div class="table-responsive">
-          <table class="table table-hover match-table">
-            <thead>
-              <tr>
-                <th>Filename</th>
-                <th>Match</th>
-                <th>Explanation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for match in data.comparison_results %}
-              <tr>
-                <td>{{ match.file_name }}</td>
-                <td class="percentage">{{ match.percentage }}%</td>
-                <td>{{ match.explanation }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+    <!-- Match Results -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <h2 class="card-title">Match Results</h2>
       </div>
+
+      {% if data.comparison_results and data.comparison_results|length > 0 %}
+      <div class="match-list">
+        {% for match in data.comparison_results %}
+        <div class="match-item">
+          <div class="match-header">
+            <div class="match-filename">
+              <span>📄</span>
+              {{ match.file_name }}
+            </div>
+            <div class="match-percentage-badge 
+              {% if match.percentage >= 70 %}match-high
+              {% elif match.percentage >= 40 %}match-medium
+              {% else %}match-low{% endif %}">
+              {{ match.percentage }}%
+            </div>
+          </div>
+          <div class="match-explanation">{{ match.explanation }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No matches found</h3>
+        <p>Upload some resumes to see match results</p>
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

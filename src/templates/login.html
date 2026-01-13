@@ -1,97 +1,333 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
 <style>
   body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
   }
-  .container {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Animated Background */
+  body::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    top: -250px;
+    right: -250px;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  body::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    bottom: -200px;
+    left: -200px;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(20px) rotate(5deg);
+    }
+  }
+
+  .auth-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 3rem;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 100%;
-    max-width: 400px;
+    max-width: 440px;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: slideIn 0.5s ease;
   }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .logo-section {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .logo-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
   h1 {
     text-align: center;
-    color: #1877f2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #636e72;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .form-group {
     margin-bottom: 1.5rem;
   }
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  .form-group {
-    margin-bottom: 1rem;
-  }
+
   label {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
     display: block;
-    color: #333;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2d3436;
+    font-size: 0.95rem;
   }
+
+  .input-wrapper {
+    position: relative;
+  }
+
   input {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0.95rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
     font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    color: #2d3436;
   }
-  button {
-    background-color: #1877f2;
+
+  input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+
+  input::placeholder {
+    color: #b2bec3;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 0.75rem;
     border: none;
-    border-radius: 4px;
-    font-size: 1rem;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    margin-top: 0.5rem;
   }
-  button:hover {
-    background-color: #166fe5;
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
   }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
   .error {
-    color: #d93025;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+    padding: 0.85rem;
+    border-radius: 10px;
     margin-top: 1rem;
-    text-align: center;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: shake 0.5s ease;
   }
-  .signup-link {
-    text-align: center;
-    margin-top: 1rem;
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
   }
-  .signup-link a {
-    color: #1877f2;
+
+  .error::before {
+    content: '⚠️';
+    font-size: 1.2rem;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #b2bec3;
+    font-size: 0.9rem;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .divider span {
+    padding: 0 1rem;
+  }
+
+  .auth-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #636e72;
+    font-size: 0.95rem;
+  }
+
+  .auth-link a {
+    color: #667eea;
     text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
   }
-  .signup-link a:hover {
+
+  .auth-link a:hover {
+    color: #764ba2;
     text-decoration: underline;
   }
+
+  .back-home {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
+  }
+
+  .back-home a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.7rem 1.2rem;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .back-home a:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+  }
+
+  @media (max-width: 640px) {
+    .auth-container {
+      padding: 2rem 1.5rem;
+      margin: 1rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .back-home {
+      top: 1rem;
+      left: 1rem;
+    }
+  }
 </style>
-{% endblock %} {% block body %}
-<div class="container">
-  <h1>Login</h1>
+{% endblock %}
+
+{% block body %}
+<div class="back-home">
+  <a href="/">← Back to Home</a>
+</div>
+
+<div class="auth-container">
+  <div class="logo-section">
+    <div class="logo-icon">📄</div>
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Sign in to continue to your dashboard</p>
+  </div>
+
   <form action="{{ url_for('auth.login') }}" method="POST">
     <div class="form-group">
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" required />
+      <label for="email">Email Address</label>
+      <div class="input-wrapper">
+        <input 
+          id="email" 
+          name="email" 
+          type="email" 
+          placeholder="you@example.com"
+          required 
+          autocomplete="email"
+        />
+      </div>
     </div>
+
     <div class="form-group">
       <label for="password">Password</label>
-      <input id="password" name="password" type="password" required />
+      <div class="input-wrapper">
+        <input 
+          id="password" 
+          name="password" 
+          type="password" 
+          placeholder="Enter your password"
+          required 
+          autocomplete="current-password"
+        />
+      </div>
     </div>
-    <button type="submit">Log In</button>
+
+    <button type="submit" class="btn-submit">Sign In</button>
   </form>
+
   {% if error %}
   <div class="error">{{ error }}</div>
   {% endif %}
-  <div class="signup-link">
-    Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up</a>
+
+  <div class="auth-link">
+    Don't have an account? <a href="{{ url_for('auth.signup') }}">Create one now</a>
   </div>
 </div>
 {% endblock %}

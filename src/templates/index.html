@@ -1,159 +1,415 @@
-{% extends "base.html" %} {% block head %}
+{% extends "base.html" %}
+{% block head %}
 <style>
-  * {
-    box-sizing: border-box;
+  body {
     margin: 0;
     padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
   }
-  body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    line-height: 1.6;
+
+  /* Navbar */
+  .navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1.2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
-  .container {
-    width: 90%;
+
+  .navbar-content {
     max-width: 1200px;
     margin: 0 auto;
-  }
-  .navbar {
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
-  }
-  .navbar-content {
+    padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
+
   .navbar-brand {
-    font-weight: bold;
-    color: #1877f2;
+    font-weight: 800;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-size: 1.5rem;
   }
+
   .nav-buttons {
     display: flex;
     gap: 1rem;
   }
+
   .btn {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.75rem 1.75rem;
+    border-radius: 50px;
     text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  .btn-outline {
-    border: 2px solid #1877f2;
-    color: #1877f2;
-  }
-  .btn-outline:hover {
-    background-color: #1877f2;
-    color: #ffffff;
-  }
-  .btn-primary {
-    background-color: #1877f2;
-    color: #ffffff;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
     border: none;
+    font-size: 1rem;
+    display: inline-block;
   }
+
+  .btn-outline {
+    background: transparent;
+    border: 2px solid #667eea;
+    color: #667eea;
+  }
+
+  .btn-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
   .btn-primary:hover {
-    background-color: #166fe5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
   }
+
+  /* Hero Section */
   .hero {
-    background-color: #ffffff;
-    padding: 6rem 0;
-    margin-bottom: 2rem;
+    padding: 8rem 2rem;
+    text-align: center;
+    color: white;
+  }
+
+  .hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    animation: fadeInUp 0.8s ease;
+  }
+
+  .hero .subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    opacity: 0.95;
+    font-weight: 400;
+    animation: fadeInUp 0.8s ease 0.2s backwards;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    animation: fadeInUp 0.8s ease 0.4s backwards;
+  }
+
+  .btn-hero {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  .btn-white {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-white:hover {
+    background: #f8f9fa;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-outline-white {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+  }
+
+  .btn-outline-white:hover {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    transform: translateY(-3px);
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 6rem 2rem;
+    background: white;
+  }
+
+  .features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-title h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-title p {
+    font-size: 1.2rem;
+    color: #636e72;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+  }
+
+  .feature-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2d3436;
+  }
+
+  .feature-card p {
+    color: #636e72;
+    line-height: 1.8;
+    font-size: 1.05rem;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 5rem 2rem;
+    color: white;
+  }
+
+  .stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
     text-align: center;
   }
-  .hero h1 {
+
+  .stat-item h3 {
     font-size: 3.5rem;
-    font-weight: bold;
-    color: #1877f2;
-    margin-bottom: 1rem;
-  }
-  .hero p {
-    font-size: 1.25rem;
-    color: #65676b;
-    margin-bottom: 2rem;
-  }
-  .feature-section {
-    padding: 4rem 0;
-  }
-  .features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-  }
-  .feature-card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 2rem;
-    flex: 1;
-    min-width: 250px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  .feature-card:hover {
-    transform: translateY(-5px);
-  }
-  .feature-icon {
-    font-size: 2.5rem;
-    color: #1877f2;
-    margin-bottom: 1rem;
-  }
-  .feature-card h3 {
-    color: #1877f2;
+    font-weight: 800;
     margin-bottom: 0.5rem;
   }
+
+  .stat-item p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+
+    .hero .subtitle {
+      font-size: 1.2rem;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-title h2 {
+      font-size: 2rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nav-buttons {
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+  }
 </style>
-{% endblock %} {% block body %}
+{% endblock %}
+
+{% block body %}
 <nav class="navbar">
-  <div class="container navbar-content">
-    <a class="navbar-brand" href="#">Resume AI Summarizer</a>
+  <div class="navbar-content">
+    <a class="navbar-brand" href="/">
+      <div class="logo-icon">📄</div>
+      Resume AI
+    </a>
     <div class="nav-buttons">
       <a href="/login" class="btn btn-outline">Login</a>
-      <a href="/signup" class="btn btn-primary">Sign Up</a>
+      <a href="/signup" class="btn btn-primary">Get Started</a>
     </div>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="container">
-    <h1>Revolutionize Your Software Job Search</h1>
-    <p>
-      Use AI to match your resume with job descriptions and stand out from the
-      crowd.
+  <div class="hero-content">
+    <h1>Transform Your Job Search with AI</h1>
+    <p class="subtitle">
+      Optimize your resume, match with job descriptions, and land your dream software engineering role faster than ever.
     </p>
-    <a href="/signup" class="btn btn-primary">Get Started</a>
+    <div class="hero-buttons">
+      <a href="/signup" class="btn btn-hero btn-white">Start Free Trial</a>
+      <a href="#features" class="btn btn-hero btn-outline-white">Learn More</a>
+    </div>
   </div>
 </section>
 
-<section class="feature-section">
-  <div class="container">
-    <div class="features">
+<section class="features-section" id="features">
+  <div class="features-container">
+    <div class="section-title">
+      <h2>Powerful Features</h2>
+      <p>Everything you need to optimize your resume and stand out</p>
+    </div>
+    
+    <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">📄</div>
-        <h3>AI-Powered Resume Analysis</h3>
+        <div class="feature-icon">🤖</div>
+        <h3>AI-Powered Analysis</h3>
         <p>
-          Our advanced AI algorithms analyze your resume to extract key
-          information and skills.
+          Advanced machine learning algorithms analyze your resume to extract key information, skills, and achievements with unmatched accuracy.
         </p>
       </div>
+      
       <div class="feature-card">
         <div class="feature-icon">🎯</div>
-        <h3>Job Description Matching</h3>
+        <h3>Smart Job Matching</h3>
         <p>
-          Compare your resume against job descriptions to see how well you match
-          the requirements.
+          Compare your resume against job descriptions in seconds. Get detailed match scores and personalized recommendations for improvement.
         </p>
       </div>
+      
       <div class="feature-card">
-        <div class="feature-icon">📈</div>
-        <h3>Improve Your Chances</h3>
+        <div class="feature-icon">📊</div>
+        <h3>Detailed Insights</h3>
         <p>
-          Get insights on how to tailor your resume for specific job
-          opportunities.
+          Receive comprehensive feedback on your resume's strengths and areas for improvement to maximize your chances of getting interviews.
         </p>
       </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Lightning Fast</h3>
+        <p>
+          Process multiple resumes and job descriptions simultaneously. Get results in seconds, not hours.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>
+          Your data is encrypted and secure. We never share your information with third parties. Your privacy is our priority.
+        </p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Responsive Design</h3>
+        <p>
+          Access your resume dashboard from any device. Fully responsive design that works seamlessly on desktop, tablet, and mobile.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stats-container">
+    <div class="stat-item">
+      <h3>98%</h3>
+      <p>Accuracy Rate</p>
+    </div>
+    <div class="stat-item">
+      <h3>10K+</h3>
+      <p>Resumes Analyzed</p>
+    </div>
+    <div class="stat-item">
+      <h3>50+</h3>
+      <p>Companies Hiring</p>
+    </div>
+    <div class="stat-item">
+      <h3>4.9★</h3>
+      <p>User Rating</p>
     </div>
   </div>
 </section>
