@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5501:5432
+    environment:
+      - POSTGRES_USER=resume_be_dev
+      - POSTGRES_PASSWORD=resume_be_dev
+      - POSTGRES_SUPERUSER_PASSWORD=resume_be_dev
+      - POSTGRES_DB=resume_be_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+volumes:
+  postgres_data:
+
