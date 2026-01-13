@@ -6,3 +6,4 @@ database.db
 .env
 __pycache__/
 .vercel
+.venv/

@@ -4,6 +4,7 @@ from database import db
 import os
 import io
 import requests
+import re
 from pdfminer3.layout import LAParams
 from pdfminer3.pdfpage import PDFPage
 from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -32,6 +33,43 @@ class ResumeService():
   def filter_file_by_extension(self,filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
+  def _clean_extracted_text(self, text):
+    """
+    Clean the extracted PDF text to fix common issues like:
+    - Characters on separate lines
+    - Excessive whitespace
+    - Broken words
+    """
+    if not text:
+      return ""
+    
+    # Replace multiple newlines with single newlines
+    text = re.sub(r'\n+', '\n', text)
+    
+    # Replace multiple spaces with single space
+    text = re.sub(r' +', ' ', text)
+    
+    # Fix broken words that are split across lines
+    # Look for patterns like "word-\nword" or "word \nword"
+    text = re.sub(r'(\w+)[-\s]*\n(\w+)', r'\1\2', text)
+    
+    # Remove leading/trailing whitespace from each line
+    lines = text.split('\n')
+    cleaned_lines = []
+    
+    for line in lines:
+      line = line.strip()
+      if line:  # Only add non-empty lines
+        cleaned_lines.append(line)
+    
+    # Join lines back together
+    cleaned_text = '\n'.join(cleaned_lines)
+    
+    # Final cleanup: remove excessive whitespace
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text)
+    
+    return cleaned_text.strip()
+
   def get_resume_pdf_text(self, file_url):
     # Download the PDF content from the pre-signed URL
     response = requests.get(file_url)
@@ -55,4 +93,7 @@ class ResumeService():
     fake_file_handle.close()
     pdf_file.close()
 
-    return text
+    # Clean the extracted text
+    cleaned_text = self._clean_extracted_text(text)
+    
+    return cleaned_text
